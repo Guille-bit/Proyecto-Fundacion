@@ -1,8 +1,9 @@
 <?php
-$servidor = "localhost";
-$usuario = "tomas3c";
-$contraseña = "Parafernalio98-";
-$base_de_datos = "tomas3c";
+$servername = "mysql-eventosapp.alwaysdata.net";
+$username   = "433035";        // usuario MySQL
+$password   = "eventosapp1";   // contraseña MySQL
+$dbname     = "eventosapp_usuarios";
+$port       = 3306;
 
 $conexion = mysqli_connect ($servidor, $usuario, $contraseña, $base_de_datos);
 
@@ -22,4 +23,5 @@ if (mysqli_num_rows($resultado) > 0){
 }*/
 
 //mysqli_close($conexion);
+
 ?>
