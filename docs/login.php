@@ -7,26 +7,27 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit;
 }
 
-$nombre = trim($_POST['nombre_user'] ?? '');
-$pass   = $_POST['password_user'] ?? '';
+$username = trim($_POST['nombre_user'] ?? '');
+$password = $_POST['password_user'] ?? '';
 
-if ($nombre === '' || $pass === '') {
+if ($username === '' || $password === '') {
     echo "❌ Usuario y contraseña requeridos";
     exit;
 }
 
-$sql = "SELECT id, nombre, password FROM usuarios WHERE nombre = ? LIMIT 1";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $nombre);
+/*$sql = "SELECT id, nombre, password FROM usuarios WHERE nombre = ? LIMIT 1";*/
+$sql = "SELECT id, username, password FROM users WHERE username = ? LIMIT 1";
+$stmt = $connection->prepare($sql);
+$stmt->bind_param("s", $username);
 $stmt->execute();
 $res = $stmt->get_result();
 
 if ($res && $res->num_rows === 1) {
     $user = $res->fetch_assoc();
-    if (password_verify($pass, $user['password'])) {
+    if (password_verify($password, $user['password'])) {
         $_SESSION['user_id'] = $user['id'];
-        $_SESSION['nombre']  = $user['nombre'];
-        echo "✅ Bienvenido " . htmlspecialchars($user['nombre']);
+        $_SESSION['username']  = $user['username'];
+        echo "✅ Bienvenido " . htmlspecialchars($user['username']);
     } else {
         echo "❌ Contraseña incorrecta";
     }
@@ -34,3 +35,4 @@ if ($res && $res->num_rows === 1) {
     echo "❌ Usuario no encontrado";
 }
 ?>
+
