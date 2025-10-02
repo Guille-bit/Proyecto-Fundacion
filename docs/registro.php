@@ -1,20 +1,29 @@
 <?php
-require 'connection.php';
+<?php
+require_once "conexion.php";
 
-if (isset($_POST['register'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    $email    = $_POST['email'];
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    header("Location: registro.html");
+    exit;
+}
 
-    $sql = "INSERT INTO users (id, username, password, email) 
-            VALUES (NULL, '$username', '$password', '$email')";
-    $result = mysqli_query($connection, $sql);
+$nombre = trim($_POST['nombre_user'] ?? '');
+$email  = trim($_POST['email_user'] ?? '');
+$pass   = $_POST['password_user'] ?? '';
 
-    if ($result) {
-        echo "Data inserted successfully.";
-    } else {
-        echo "Failed to insert data." . "<br>";
-        echo "Error: " . $sql . "<br>" . mysqli_error($connection);
-    }
+if ($nombre === '' || $email === '' || $pass === '') {
+    echo "❌ Todos los campos son obligatorios";
+    exit;
+}
+
+$hash = password_hash($pass, PASSWORD_DEFAULT);
+$sql = "INSERT INTO usuarios (nombre, email, password) VALUES (?, ?, ?)";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("sss", $nombre, $email, $hash);
+
+if ($stmt->execute()) {
+    echo "✅ Usuario registrado correctamente. <a href='login.html'>Inicia sesión</a>";
+} else {
+    echo "❌ Error: " . $stmt->error;
 }
 ?>
