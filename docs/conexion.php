@@ -1,11 +1,11 @@
 <?php
-$servername = "mysql-eventosapp.alwaysdata.net";
-$username   = "433035";        // usuario MySQL
-$password   = "eventosapp1";   // contraseña MySQL
-$dbname     = "eventosapp_usuarios";
+$servername = "100.107.241.28";
+$username   = "equipo";        // usuario MySQL
+$password   = "PassMuySegura_123";   // contraseña MySQL
+$dbname     = "login_db";
 $port       = 3306;
 
-$conexion = mysqli_connect ($servidor, $usuario, $contraseña, $base_de_datos);
+$conexion = mysqli_connect ($servername, $username, $password, $dbname);
 
 if (!$conexion) {
   die ("Conexión fallida: " . mysqli_connect_error());
@@ -25,3 +25,4 @@ if (mysqli_num_rows($resultado) > 0){
 //mysqli_close($conexion);
 
 ?>
+
