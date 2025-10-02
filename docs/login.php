@@ -1,17 +1,36 @@
-<?php 
-require 'conexion.php';
- if (isset ($_POST['login'])) {
-  $username = $_POST['nombre_user'];
-  $password = $_POST['password_user'];
+<?php
+session_start();
+require_once "conexion.php";
 
-  $sql = "SELECT * FROM usuarios WHERE nombre_user = '$username' AND password_user = '$password'";
-  $resultado = mysqli_query($conexion,$sql);
-  $numero_registros = mysqli_num_rows($resultado);
-    if($numero_registros != 0) {
-      echo "Sesión iniciada con éxito, bienvenido " . $username . "!";
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    header("Location: login.html");
+    exit;
+}
+
+$nombre = trim($_POST['nombre_user'] ?? '');
+$pass   = $_POST['password_user'] ?? '';
+
+if ($nombre === '' || $pass === '') {
+    echo "❌ Usuario y contraseña requeridos";
+    exit;
+}
+
+$sql = "SELECT id, nombre, password FROM usuarios WHERE nombre = ? LIMIT 1";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $nombre);
+$stmt->execute();
+$res = $stmt->get_result();
+
+if ($res && $res->num_rows === 1) {
+    $user = $res->fetch_assoc();
+    if (password_verify($pass, $user['password'])) {
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['nombre']  = $user['nombre'];
+        echo "✅ Bienvenido " . htmlspecialchars($user['nombre']);
     } else {
-      echo "Credenciales inválidas. Por favor, verifique su nombre de usuario y/o contraseña." . "<br>";
-      echo "Error: " . $sql . "<br>" . mysqli_error($conexion);
+        echo "❌ Contraseña incorrecta";
     }
- }
+} else {
+    echo "❌ Usuario no encontrado";
+}
 ?>
