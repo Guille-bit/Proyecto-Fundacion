@@ -1,28 +1,15 @@
 <?php
-$servername = "100.107.241.28";
-$username   = "equipo";        // usuario MySQL
-$password   = "PassMuySegura_123";   // contraseña MySQL
-$dbname     = "login_db";
+$servername = "100.107.241.28"; // o IP Tailscale si usas otro PC
+$username   = "equipo";       // usuario de MySQL (ajusta si usas otro)
+$password   = "PassMuySegura_123";           // contraseña (vacío por defecto en XAMPP)
+$dbname     = "login_db";   // nombre de la base de datos
 $port       = 3306;
 
-$conexion = mysqli_connect ($servername, $username, $password, $dbname);
-
-if (!$conexion) {
-  die ("Conexión fallida: " . mysqli_connect_error());
+$connection = new mysqli($servername, $username, $password, $dbname, $port);
+if ($connection->connect_error) {
+    die("❌ Error de conexión: " . $connection->connect_error);
 }
-
-/*$sql= "SELECT * FROM usuarios";
-$resultado = mysqli_query($conexion, $sql);
-
-if (mysqli_num_rows($resultado) > 0){
-  while($fila = mysqli_fetch_assoc ($resultado)){
-    echo "ID: " . $fila["id_user"] . " - Nombre: " . $fila["nombre_user"] . " -Contraseña: " .  $fila["password_user"] . " -Email: " .  $fila["email_user"]."<br>";
-    }
-} else {
-  echo "No se encontraron resultados.";
-}*/
-
-//mysqli_close($conexion);
+$connection->set_charset("utf8mb4");
 
 ?>
 
