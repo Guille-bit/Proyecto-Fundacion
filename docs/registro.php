@@ -9,16 +9,15 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 $username = trim($_POST['nombre_user'] ?? '');
 $email  = trim($_POST['email_user'] ?? '');
 $password   = $_POST['password_user'] ?? '';
+$phone     = trim($_POST['phone_user'] ?? '');      // ← nuevo
+$birthdate = trim($_POST['birthdate_user'] ?? '');  // ← nuevo
 
-if ($username === '' || $email === '' || $password === '') {
+if ($username === '' || $email === '' || $password === '' || $phone === '' || $birthdate === '') {
     echo "❌ Todos los campos son obligatorios";
     exit;
 }
 
 $hash = password_hash($password, PASSWORD_DEFAULT);
-/*$sql = "INSERT INTO usuarios (nombre, email, password) VALUES (?, ?, ?)";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("sss", $username, $email, $hash);*/
 $sql = "INSERT INTO users (username, email, password, phone, birthdate) 
         VALUES (?, ?, ?, ?, ?)";
 $stmt = $connection->prepare($sql);
@@ -30,3 +29,5 @@ if ($stmt->execute()) {
     echo "❌ Error: " . $stmt->error;
 }
 ?>
+
+
