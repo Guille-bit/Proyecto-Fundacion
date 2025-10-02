@@ -1,5 +1,4 @@
 <?php
-<?php
 require_once "conexion.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
@@ -7,19 +6,23 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit;
 }
 
-$nombre = trim($_POST['nombre_user'] ?? '');
+$username = trim($_POST['nombre_user'] ?? '');
 $email  = trim($_POST['email_user'] ?? '');
-$pass   = $_POST['password_user'] ?? '';
+$password   = $_POST['password_user'] ?? '';
 
-if ($nombre === '' || $email === '' || $pass === '') {
+if ($username === '' || $email === '' || $password === '') {
     echo "❌ Todos los campos son obligatorios";
     exit;
 }
 
-$hash = password_hash($pass, PASSWORD_DEFAULT);
-$sql = "INSERT INTO usuarios (nombre, email, password) VALUES (?, ?, ?)";
+$hash = password_hash($password, PASSWORD_DEFAULT);
+/*$sql = "INSERT INTO usuarios (nombre, email, password) VALUES (?, ?, ?)";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("sss", $nombre, $email, $hash);
+$stmt->bind_param("sss", $username, $email, $hash);*/
+$sql = "INSERT INTO users (username, email, password, phone, birthdate) 
+        VALUES (?, ?, ?, ?, ?)";
+$stmt = $connection->prepare($sql);
+$stmt->bind_param("sssss", $username, $email, $hash, $phone, $birthdate);
 
 if ($stmt->execute()) {
     echo "✅ Usuario registrado correctamente. <a href='login.html'>Inicia sesión</a>";
