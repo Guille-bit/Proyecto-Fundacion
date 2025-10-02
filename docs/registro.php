@@ -1,18 +1,20 @@
 <?php
-require 'conexion.php';
+require 'connection.php';
 
-if(isset($_POST['registro'])) {
-  $usuario = $_POST['nombre_user'];
-  $password = $_POST['password_user'];
-  $email = $_POST['email_user'];
+if (isset($_POST['register'])) {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $email    = $_POST['email'];
 
-  $sql = "INSERT INTO usuarios (id_user, nombre_user, password_user, email_user) VALUES (null, '$usuario', '$password', '$email')";
-  $resultado = mysqli_query($conexion,$sql);
-    if($resultado){
-      echo "Se insertaron los datos correctamente.";
+    $sql = "INSERT INTO users (id, username, password, email) 
+            VALUES (NULL, '$username', '$password', '$email')";
+    $result = mysqli_query($connection, $sql);
+
+    if ($result) {
+        echo "Data inserted successfully.";
     } else {
-      echo "No se puede insertar la información." . "<br>";
-      echo "Error: " . $sql . "<br>" . mysqli_error($conexion);
+        echo "Failed to insert data." . "<br>";
+        echo "Error: " . $sql . "<br>" . mysqli_error($connection);
     }
 }
 ?>
