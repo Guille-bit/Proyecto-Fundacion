@@ -1,6 +1,6 @@
 <?php
 session_start();
-session_destroy();
+session_destroy(); // Elimina toda la sesión
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -15,7 +15,7 @@ session_destroy();
 <body>
  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="#">EventosApp</a>
+    <a class="navbar-brand fw-bold" href="index.php">EventosApp</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -33,28 +33,30 @@ session_destroy();
       <!-- Menú de usuario con icono -->
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <li class="nav-item dropdown user-hover">
-  <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userMenu" role="button">
-     <?php
-      if (isset($_SESSION['username'])) {
-        echo htmlspecialchars($_SESSION['username']);
-      } else {
-        echo 'Invitado';
-      }
-    ?>
-    <span class="me-1">👤</span> 
-  </a>
-  <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="userMenu">
-    <li><a class="dropdown-item" href="login.html">🔐 Iniciar sesión</a></li>
-    <li><a class="dropdown-item" href="registro.html">📝 Registrarse</a></li>
-  </ul>
-</li>
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="me-1">👤</span>
+            <?php
+              if (isset($_SESSION['username'])) {
+                echo htmlspecialchars($_SESSION['username']);
+              } else {
+                echo 'Invitado';
+              }
+            ?>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="userMenu">
+            <?php if (!isset($_SESSION['username'])): ?>
+              <li><a class="dropdown-item" href="login.html"><i class="bi bi-box-arrow-in-right me-2"></i> Iniciar sesión</a></li>
+              <li><a class="dropdown-item" href="registro.html"><i class="bi bi-pencil-square me-2"></i> Registrarse</a></li>
+            <?php else: ?>
+              <li><a class="dropdown-item" href="perfil.php"><i class="bi bi-person-circle me-2"></i> Mi perfil</a></li>
+              <li><a class="dropdown-item" href="index.php"><i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión</a></li>
+            <?php endif; ?>
+          </ul>
+        </li>
       </ul>
     </div>
   </div>
 </nav>
-
-
-
 <div class="container py-5">
   <h1 class="mb-4 text-center">🎉 Próximos Eventos</h1>
   <div class="row g-4">
@@ -66,7 +68,7 @@ session_destroy();
         <div class="card-body">
           <h5 class="event-title">Festival de Cine Independiente</h5>
           <p class="mb-1"><strong>📅 Fecha:</strong> 12 Oct 2025</p>
-          <p class="mb-1"><strong>📍 Lugar:</strong> Centro Cultural Móstoles</p>
+          <p class="mb-1"><strong>📍 Lugar:</strong> Cines Callao</p>
           <span class="badge bg-primary">Cultura</span>
           <a href="#" class="btn btn-outline-dark w-100 mt-3 reservar-btn"
    data-titulo="Festival de Cine Independiente"
@@ -99,7 +101,7 @@ session_destroy();
         <div class="card-body">
           <h5 class="event-title">Mercado Artesanal de Otoño</h5>
           <p class="mb-1"><strong>📅 Fecha:</strong> 18 Oct 2025</p>
-          <p class="mb-1"><strong>📍 Lugar:</strong> Plaza del Ayuntamiento</p>
+          <p class="mb-1"><strong>📍 Lugar:</strong> Plaza Mayor</p>
           <span class="badge bg-warning text-dark">Ferias</span>
           <a href="#" class="btn btn-outline-dark w-100 mt-3">Reservar</a>
         </div>
@@ -127,7 +129,7 @@ session_destroy();
         <div class="card-body">
           <h5 class="event-title">Feria del Libro Local</h5>
           <p class="mb-1"><strong>📅 Fecha:</strong> 22 Oct 2025</p>
-          <p class="mb-1"><strong>📍 Lugar:</strong> Biblioteca Central</p>
+          <p class="mb-1"><strong>📍 Lugar:</strong> Parque El Retiro</p>
           <span class="badge bg-primary">Cultura</span>
           <a href="#" class="btn btn-outline-dark w-100 mt-3">Reservar</a>
         </div>
@@ -137,4 +139,3 @@ session_destroy();
     <!-- Tarjeta 6 -->
     <div class="col-md-4">
       <div class="card event-card">
-
