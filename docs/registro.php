@@ -54,3 +54,4 @@ $stmt->bind_param("sssss", $username, $email, $hash, $phone, $birthdate);
 $stmt->execute();
 
 echo "✅ Usuario registrado. <a href='login.html'>Inicia sesión</a>";
+?>
