@@ -28,12 +28,16 @@ if ($res && $res->num_rows === 1) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username']  = $user['username'];
         echo "✅ Bienvenido " . htmlspecialchars($user['username']);
+        echo ". <a href='index.php'>Inicio</a>";
     } else {
         echo "❌ Contraseña incorrecta";
     }
 } else {
     echo "❌ Usuario no encontrado";
 }
+
 ?>
+?>
+
 
 
