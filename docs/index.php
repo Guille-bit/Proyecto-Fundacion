@@ -1,5 +1,6 @@
 <?php
 session_start();
+session_destroy();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -136,3 +137,4 @@ session_start();
     <!-- Tarjeta 6 -->
     <div class="col-md-4">
       <div class="card event-card">
+
