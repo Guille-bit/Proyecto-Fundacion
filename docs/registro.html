@@ -56,13 +56,14 @@
             </div>
             <div class="form-group">
               <input
-                type="date"
+                type="text"
                 class="form-control"
-                name="date_user"
-                placeholder="Fecha de nacimiento"
+                name="birthdate_user"
+                placeholder="Fecha de nacimiento (dd/mm/aaaa)"
+                pattern="^(0?[1-9]|[12]\d|3[01])/(0?[1-9]|1[0-2])/\d{4}$"
                 required
-              />
-            </div>
+                />
+              </div>
             <button type="submit" class="btn btn-primary" name="registro">
               Registrarse
             </button>
@@ -73,6 +74,17 @@
         </div>
       </div>
     </div>
+    <script>
+    document.querySelector('input[name="birthdate_user"]').addEventListener('blur', (e) => {
+    const v = e.target.value.trim();
+    const m = v.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (!m) return; // formato no válido, el servidor validará
+    const dd = String(m[1]).padStart(2,'0');
+    const mm = String(m[2]).padStart(2,'0');
+    const yyyy = m[3];
+    e.target.value = `${dd}/${mm}/${yyyy}`;
+    });
+    </script>
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
       integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
