@@ -3,7 +3,7 @@ session_start();
 require_once "conexion.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    header("Location: login.html");
+    header("Location: login.php");
     exit;
 }
 
@@ -35,4 +35,5 @@ if ($res && $res->num_rows === 1) {
     echo "❌ Usuario no encontrado";
 }
 ?>
+
 
