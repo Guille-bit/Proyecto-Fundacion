@@ -2,10 +2,6 @@
 session_start();
 require __DIR__ . '/conexion.php'; // $connection (mysqli)
 
-if (!isset($_SESSION['user_id'])) {
-  header('Location: login.php'); exit;
-}
-
 date_default_timezone_set('Europe/Madrid');
 
 function dtl_to_mysql(?string $s): ?string {
