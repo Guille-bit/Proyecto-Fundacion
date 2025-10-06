@@ -1,0 +1,4 @@
+DirectoryIndex index.php
+Redirect 301 /Proyecto-Fundacion/docs/index.html /Proyecto-Fundacion/docs/index.php
+Redirect 301 /Proyecto-Fundacion/docs/login.html /Proyecto-Fundacion/docs/login.php
+Redirect 301 /Proyecto-Fundacion/docs/registro.html /Proyecto-Fundacion/docs/registro.php
