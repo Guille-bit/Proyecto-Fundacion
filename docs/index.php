@@ -47,7 +47,7 @@ session_destroy(); // Elimina toda la sesión
           </a>
           <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="userMenu">
             <?php if (!isset($_SESSION['username'])): ?>
-              <li><a class="dropdown-item" href="login.html"><i class="bi bi-box-arrow-in-right me-2"></i> Iniciar sesión</a></li>
+              <li><a class="dropdown-item" href="login.php"><i class="bi bi-box-arrow-in-right me-2"></i> Iniciar sesión</a></li>
               <li><a class="dropdown-item" href="registro.php"><i class="bi bi-pencil-square me-2"></i> Registrarse</a></li>
             <?php else: ?>
               <li><a class="dropdown-item" href="perfil.php"><i class="bi bi-person-circle me-2"></i> Mi perfil</a></li>
@@ -142,3 +142,4 @@ session_destroy(); // Elimina toda la sesión
     </div>
   </body>
   </html>
+
