@@ -52,7 +52,7 @@ session_destroy(); // Elimina toda la sesión
             <?php else: ?>
               <li><a class="dropdown-item" href="perfil.php"><i class="bi bi-person-circle me-2"></i> Mi perfil</a></li>
               <li><a class="dropdown-item" href="index.php"><i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión</a></li>
-              <li><a class="dropdown-item" href="eventos.php"><i class="bi bi-plus-lg"></i> Crear Eventos</a></i>
+              <li><a class="dropdown-item" href="crear_eventos.php"><i class="bi bi-plus-lg"></i> Crear Eventos</a></i>
             <?php endif; ?>
           </ul>
         </li>
@@ -142,4 +142,5 @@ session_destroy(); // Elimina toda la sesión
     </div>
   </body>
   </html>
+
 
