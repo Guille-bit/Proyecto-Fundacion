@@ -140,9 +140,5 @@ session_destroy(); // Elimina toda la sesión
         </div>
       </div>
     </div>
-
-    <!-- Tarjeta 6 -->
-    <div class="col-md-4">
-      <div class="card event-card">
-
-
+  </body>
+  </html>
