@@ -1,112 +1,123 @@
 <?php
 session_start();
+include 'conexion.php';
 
-// Configuración de base de datos
-$servername = "100.107.241.28"; // o IP Tailscale si usas otro PC
-$username   = "equipo";       // usuario de MySQL (ajusta si usas otro)
-$password   = "PassMuySegura_123";           // contraseña (vacío por defecto en XAMPP)
-$base_datos = "login_db";
-$port       = 3306;
-
-// Crear conexión
-$conn = new mysqli($servername, $username, $password, $base_datos, $port);
-
-// Verificar conexión
-if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
+// Destruir sesión si vienes de logout
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header("Location: index.php");
+    exit;
 }
 
-// Consulta de eventos
-$sql = "SELECT * FROM eventos ORDER BY fecha ASC";
-$resultado = $conn->query($sql);
-?>
+// Captura búsqueda y filtro
+$busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
+$categoria = isset($_GET['categoria']) ? $_GET['categoria'] : '';
 
+// Construir SQL
+$sql = "SELECT * FROM events WHERE is_public = 1";
+
+if (!empty($busqueda)) {
+    $sql .= " AND title LIKE '%" . $connection->real_escape_string($busqueda) . "%'";
+}
+
+if (!empty($categoria)) {
+    $sql .= " AND category = '" . $connection->real_escape_string($categoria) . "'";
+}
+
+$sql .= " ORDER BY start_at ASC";
+$resultado = $connection->query($sql);
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
   <title>Eventos | EventosApp</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-    <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="#">EventosApp</a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarMenu"
-        aria-controls="navbarMenu"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
 
-      <div class="collapse navbar-collapse" id="navbarMenu">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <?php if (!isset($_SESSION['usuario_nombre'])): ?>
-            <li class="nav-item">
-              <a class="nav-link" href="login.html">🔐 Iniciar sesión</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="registro.html">📝 Registrarse</a>
-            </li>
-          <?php endif; ?>
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="index.php">EventosApp</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-          <li class="nav-item">
-            <a class="nav-link" href="#">📅 Mis reservas</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">❤️ Favoritos</a>
-          </li>
-        </ul>
+    <div class="collapse navbar-collapse" id="navbarMenu">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="reservas.html">📅 Mis reservas</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">❤️ Favoritos</a></li>
+      </ul>
 
-        <?php if (isset($_SESSION['usuario_nombre'])): ?>
-          <span class="navbar-text">
-            Hola, <strong><?= htmlspecialchars($_SESSION['usuario_nombre']) ?></strong>
-            <a href="logout.php" class="btn btn-sm btn-outline-danger ms-3">Cerrar sesión</a>
-          </span>
-        <?php endif; ?>
-      </div>
-    </div>
-  </nav>
-
-  <div class="container py-5">
-    <h1 class="mb-4 text-center">🎉 Próximos Eventos</h1>
-    <div class="row g-4">
-
-      <?php if ($resultado->num_rows > 0): ?>
-        <?php while($evento = $resultado->fetch_assoc()): ?>
-          <div class="col-md-4">
-            <div class="card event-card shadow-sm">
-              <?php if (!empty($evento['imagen_url'])): ?>
-                <img src="<?= htmlspecialchars($evento['imagen_url']) ?>" class="card-img-top event-img" alt="Imagen del evento" />
-              <?php else: ?>
-                <img src="https://source.unsplash.com/400x200/?event" class="card-img-top event-img" alt="Imagen genérica de evento" />
-              <?php endif; ?>
-
-              <div class="card-body">
-                <h5 class="event-title"><?= htmlspecialchars($evento['titulo']) ?></h5>
-                <p class="mb-1"><strong>📅 Fecha:</strong> <?= htmlspecialchars($evento['fecha']) ?> a las <?= htmlspecialchars($evento['hora']) ?></p>
-                <p class="mb-1"><strong>📍 Lugar:</strong> <?= htmlspecialchars($evento['lugar']) ?></p>
-                <p><?= nl2br(htmlspecialchars($evento['descripcion'])) ?></p>
-                <a href="#" class="btn btn-outline-dark w-100 mt-3">Reservar</a>
-              </div>
-            </div>
-          </div>
-        <?php endwhile; ?>
-      <?php else: ?>
-        <p>No hay eventos disponibles.</p>
-      <?php endif; ?>
-
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item dropdown user-hover">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="me-1">👤</span>
+            <?= isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Invitado'; ?>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="userMenu">
+            <?php if (!isset($_SESSION['username'])): ?>
+              <li><a class="dropdown-item" href="login.html">🔐 Iniciar sesión</a></li>
+              <li><a class="dropdown-item" href="registro.html">📝 Registrarse</a></li>
+            <?php else: ?>
+              <li><a class="dropdown-item" href="perfil.php">👤 Mi perfil</a></li>
+              <li><a class="dropdown-item" href="?logout=true">🚪 Cerrar sesión</a></li>
+            <?php endif; ?>
+          </ul>
+        </li>
+      </ul>
     </div>
   </div>
+</nav>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<div class="container py-5">
+  <h1 class="mb-4 text-center">🎉 Próximos Eventos</h1>
+
+  <!-- Buscador y Filtro -->
+  <form method="GET" class="row mb-4">
+    <div class="col-md-6">
+      <input type="text" name="busqueda" class="form-control" placeholder="🔍 Buscar eventos..." value="<?= htmlspecialchars($busqueda) ?>">
+    </div>
+    <div class="col-md-4">
+      <select name="categoria" class="form-select">
+        <option value="">🎯 Filtrar por categoría</option>
+        <option value="Cultura" <?= $categoria == "Cultura" ? "selected" : "" ?>>Cultura</option>
+        <option value="Tecnología" <?= $categoria == "Tecnología" ? "selected" : "" ?>>Tecnología</option>
+        <option value="Ferias" <?= $categoria == "Ferias" ? "selected" : "" ?>>Ferias</option>
+        <option value="Bienestar" <?= $categoria == "Bienestar" ? "selected" : "" ?>>Bienestar</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-dark w-100">Buscar</button>
+    </div>
+  </form>
+
+  <div class="row g-4">
+    <?php if ($resultado && $resultado->num_rows > 0): ?>
+      <?php while ($evento = $resultado->fetch_assoc()): ?>
+        <div class="col-md-4">
+          <div class="card event-card h-100">
+            <img src="<?= htmlspecialchars($evento['image_path']) ?>" class="card-img-top event-img" alt="<?= htmlspecialchars($evento['title']) ?>">
+            <div class="card-body">
+              <h5 class="event-title"><?= htmlspecialchars($evento['title']) ?></h5>
+              <p class="mb-1"><strong>📅 Fecha:</strong> <?= date('d M Y', strtotime($evento['start_at'])) ?></p>
+              <p class="mb-1"><strong>📍 Lugar:</strong> <?= htmlspecialchars($evento['location']) ?></p>
+              <span class="badge bg-secondary"><?= htmlspecialchars($evento['category']) ?></span>
+              <a href="#" class="btn btn-outline-dark w-100 mt-3">Reservar</a>
+            </div>
+          </div>
+        </div>
+      <?php endwhile; ?>
+    <?php else: ?>
+      <div class="col-12">
+        <div class="alert alert-warning text-center">😢 No se encontraron eventos con esos filtros.</div>
+      </div>
+    <?php endif; ?>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-<?php $conn->close(); ?>
