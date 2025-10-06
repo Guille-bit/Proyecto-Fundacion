@@ -1,5 +1,21 @@
 <?php
+// session_boot.php
+ini_set('session.use_strict_mode','1');
+session_set_cookie_params([
+  'lifetime' => 0,
+  'path'     => '/',      // MUY IMPORTANTE: visible en / y /docs
+  'httponly' => true,
+  'samesite' => 'Lax',
+  // 'secure' => true,    // solo si usas HTTPS
+]);
+
+// Guarda sesiones en carpeta LOCAL del proyecto (evita problemas de XAMPP)
+$__sess_dir = __DIR__ . '/sessions';
+if (!is_dir($__sess_dir)) { @mkdir($__sess_dir, 0777, true); }
+ini_set('session.save_path', $__sess_dir);
+
 session_start();
+
 require_once "conexion.php";
 
 // Variable para mostrar mensajes de error

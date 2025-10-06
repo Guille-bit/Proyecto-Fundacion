@@ -1,6 +1,24 @@
 <?php
-session_start();
-session_destroy(); // Elimina toda la sesión
+// session_boot.php — inicia y configura la sesión (NO destruir aquí)
+ini_set('session.use_strict_mode', '1');
+
+session_set_cookie_params([
+  'lifetime' => 0,
+  'path'     => '/',      // visible en todo el sitio
+  'httponly' => true,
+  'samesite' => 'Lax',
+  // 'secure' => true,    // actívalo solo si usas HTTPS
+]);
+
+// Guarda sesiones en carpeta local del proyecto (evita problemas de XAMPP)
+$__sess_dir = __DIR__ . '/sessions';
+if (!is_dir($__sess_dir)) { @mkdir($__sess_dir, 0777, true); }
+ini_set('session.save_path', $__sess_dir);
+
+// Iniciar sesión solo si no está ya activa
+if (session_status() !== PHP_SESSION_ACTIVE) {
+  session_start();
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -51,7 +69,7 @@ session_destroy(); // Elimina toda la sesión
               <li><a class="dropdown-item" href="registro.php"><i class="bi bi-pencil-square me-2"></i> Registrarse</a></li>
             <?php else: ?>
               <li><a class="dropdown-item" href="perfil.php"><i class="bi bi-person-circle me-2"></i> Mi perfil</a></li>
-              <li><a class="dropdown-item" href="index.php"><i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión</a></li>
+              <li><a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión</a></li>
               <li><a class="dropdown-item" href="crear_eventos.php"><i class="bi bi-plus-lg"></i> Crear Eventos</a></i>
             <?php endif; ?>
           </ul>
