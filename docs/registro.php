@@ -126,7 +126,7 @@ echo "✅ Usuario registrado. <a href='login.html'>Inicia sesión</a>";
             </button>
           </form>
           <p class="mt-3">
-            ¿Ya tienes una cuenta? <a href="login.html">Inicia sesión aquí</a>
+            ¿Ya tienes una cuenta? <a href="login.php">Inicia sesión aquí</a>
           </p>
         </div>
       </div>
@@ -161,4 +161,5 @@ echo "✅ Usuario registrado. <a href='login.html'>Inicia sesión</a>";
     ></script>
   </body>
 </html>
+
 
