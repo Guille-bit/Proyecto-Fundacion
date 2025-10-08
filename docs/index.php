@@ -30,7 +30,12 @@ if ($busqueda !== '') {
   $sql .= " AND title LIKE '%" . $connection->real_escape_string($busqueda) . "%'";
 }
 if ($categoria !== '') {
-  $sql .= " AND category = '" . $connection->real_escape_string($categoria) . "'";
+  if ($categoria === 'Others') {
+    // Mostrar eventos que NO pertenezcan a las categorías principales
+    $sql .= " AND category NOT IN ('Cultura', 'Tecnología', 'Ferias', 'Bienestar')";
+  } else {
+    $sql .= " AND category = '" . $connection->real_escape_string($categoria) . "'";
+  }
 }
 if ($lugar !== '') {
   $sql .= " AND location LIKE '%" . $connection->real_escape_string($lugar) . "%'";
@@ -141,6 +146,7 @@ $resultado = $connection->query($sql);
         <option value="Tecnología" <?= $categoria == "Tecnología" ? "selected" : "" ?>>Tecnología</option>
         <option value="Ferias" <?= $categoria == "Ferias" ? "selected" : "" ?>>Ferias</option>
         <option value="Bienestar" <?= $categoria == "Bienestar" ? "selected" : "" ?>>Bienestar</option>
+        <option value="Others" <?= $categoria == "Others" ? "selected" : "" ?>>Others</option>
       </select>
     </div>
     <div class="col-md-3">
@@ -203,5 +209,3 @@ $resultado = $connection->query($sql);
 
 </body>
 </html>
-
-
