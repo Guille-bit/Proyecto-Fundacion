@@ -30,12 +30,7 @@ if ($busqueda !== '') {
   $sql .= " AND title LIKE '%" . $connection->real_escape_string($busqueda) . "%'";
 }
 if ($categoria !== '') {
-  if ($categoria === 'Others') {
-    // Mostrar eventos que NO pertenezcan a las categorías principales
-    $sql .= " AND category NOT IN ('Cultura', 'Tecnología', 'Ferias', 'Bienestar')";
-  } else {
-    $sql .= " AND category = '" . $connection->real_escape_string($categoria) . "'";
-  }
+  $sql .= " AND category = '" . $connection->real_escape_string($categoria) . "'";
 }
 if ($lugar !== '') {
   $sql .= " AND location LIKE '%" . $connection->real_escape_string($lugar) . "%'";
@@ -48,7 +43,8 @@ $resultado = $connection->query($sql);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Eventos | EventosApp</title>
+  <title>EventosApp</title>
+  <link rel="shortcut icon" href="empresa.png" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link rel="stylesheet" href="style.css?v=<?= filemtime(__DIR__.'/style.css') ?>">
@@ -99,15 +95,15 @@ $resultado = $connection->query($sql);
 <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <img src="img/Sala_de_cine.jpg" class="d-block w-100 img-fluid event-img" alt="Festival de Cine">
+      <img src="uploads/eventos/bernabeu.jpg" class="d-block w-100 img-fluid event-img" alt="Festival de Cine">
       <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
-        <h5>Festival de Cine Independiente</h5>
-        <p>12 Oct 2025 - Cines Callao</p>
+        <h5>Tour Santiago Bernabeu</h5>
+        <p>12 Oct 2025 - Estadio Santiago Bernabeu</p>
         <a href="#" class="btn btn-primary mt-2">Reservar</a>
       </div>
     </div>
     <div class="carousel-item">
-      <img src="img/programar.jpg" class="d-block w-100 img-fluid event-img" alt="Taller de Programación">
+      <img src="uploads/eventos/programar.jpg" class="d-block w-100 img-fluid event-img" alt="Taller de Programación">
       <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
         <h5>Taller de Programación Web</h5>
         <p>15 Oct 2025 - Aula Virtual Medac</p>
@@ -115,7 +111,7 @@ $resultado = $connection->query($sql);
       </div>
     </div>
     <div class="carousel-item">
-      <img src="img/artesanal.jpg" class="d-block w-100 img-fluid event-img" alt="Mercado Artesanal">
+      <img src="uploads/eventos/artesanal.jpg" class="d-block w-100 img-fluid event-img" alt="Mercado Artesanal">
       <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
         <h5>Mercado Artesanal de Otoño</h5>
         <p>18 Oct 2025 - Plaza Mayor</p>
@@ -130,7 +126,6 @@ $resultado = $connection->query($sql);
     <span class="carousel-control-next-icon"></span>
   </button>
 </div>
-
 <!-- BUSCADOR -->
 <div class="container py-5">
   <form method="GET" class="row align-items-end mb-4">
@@ -146,7 +141,6 @@ $resultado = $connection->query($sql);
         <option value="Tecnología" <?= $categoria == "Tecnología" ? "selected" : "" ?>>Tecnología</option>
         <option value="Ferias" <?= $categoria == "Ferias" ? "selected" : "" ?>>Ferias</option>
         <option value="Bienestar" <?= $categoria == "Bienestar" ? "selected" : "" ?>>Bienestar</option>
-        <option value="Others" <?= $categoria == "Others" ? "selected" : "" ?>>Others</option>
       </select>
     </div>
     <div class="col-md-3">
@@ -157,7 +151,6 @@ $resultado = $connection->query($sql);
       <button type="submit" class="btn btn-light w-100"><i class="bi bi-search"></i> Buscar</button>
     </div>
   </form>
-
   <!-- RESULTADOS DE LA BASE DE DATOS -->
   <div class="row g-4">
     <?php if ($resultado && $resultado->num_rows > 0): ?>
@@ -185,27 +178,60 @@ $resultado = $connection->query($sql);
   </div>
 </div>
 
-<!-- SEPARADOR -->
-<div class="container"><hr class="my-4 border-white"></div>
 
-<!-- SECCIÓN DE PRÓXIMOS EVENTOS (estática o futura integración) -->
-<div class="container pb-5">
-  <h1 class="mb-4 text-center"><i class="bi bi-watch"></i> Próximos Eventos</h1>
+<div class="container py-4">
+  <h2>Próximos eventos</h2>
+  <?php
+  $sql = "SELECT id, title, description, category, location, start_at, end_at, price, image_path
+          FROM events
+          WHERE is_public = 1
+            AND start_at >= NOW()
+          ORDER BY start_at ASC
+          LIMIT 3";
+  $res = $connection->query($sql);
+  ?>
+
   <div class="row g-4">
-    <div class="col-md-4">
-      <div class="card event-card">
-        <img src="img/yoga.jpg" class="card-img-top event-img" alt="Clase de Yoga">
-        <div class="card-body">
-          <h5 class="event-title">Clase Gratuita de Yoga</h5>
-          <p class="mb-1"><strong><i class="bi bi-calendar-fill"></i> Fecha:</strong> 20 Oct 2025</p>
-          <p class="mb-1"><strong><i class="bi bi-geo-alt"></i> Lugar:</strong> Parque del Soto</p>
-          <span class="badge bg-info text-dark">Bienestar</span>
-          <a href="#" class="btn btn-outline-dark w-100 mt-3">Reservar</a>
+    <?php if ($res && $res->num_rows > 0): ?>
+      <?php while ($evento = $res->fetch_assoc()): ?>
+        <?php $img = $evento['image_path'] ?: 'assets/default-event.jpg'; ?>
+        <div class="col-md-4">
+          <div class="card event-card h-100 shadow-sm">
+            <img src="<?= htmlspecialchars($img) ?>"
+                 class="card-img-top event-img"
+                 alt="<?= htmlspecialchars($evento['title']) ?>"
+                 onerror="this.onerror=null;this.src='assets/default-event.jpg';">
+            <div class="card-body">
+              <h5 class="event-title"><?= htmlspecialchars($evento['title']) ?></h5>
+              <p class="mb-1"><strong><i class="bi bi-calendar-event"></i> Fecha:</strong>
+                <?= date('d M Y', strtotime($evento['start_at'])) ?>
+              </p>
+              <p class="mb-1"><strong><i class="bi bi-geo-alt"></i> Lugar:</strong>
+                <?= htmlspecialchars($evento['location']) ?>
+              </p>
+              <span class="badge bg-secondary"><?= htmlspecialchars($evento['category']) ?></span>
+              <a href="#" class="btn btn-outline-dark w-100 mt-3">Reservar</a>
+            </div>
+          </div>
+        </div>
+      <?php endwhile; ?>
+    <?php else: ?>
+      <div class="col-12">
+        <div class="alert alert-warning text-center">
+          <i class="bi bi-exclamation-triangle-fill"></i> No hay eventos próximos.
         </div>
       </div>
-    </div>
+    <?php endif; ?>
   </div>
 </div>
+<footer class="bg-custom-navbar text-white text-center py-4 mt-5">
+  <div class="container">
+    <p class="mb-1 fw-bold">EventosApp &copy; 2025</p>
+    <p class="mb-0">Tu plataforma para descubrir y reservar eventos únicos</p>
+  </div>
+</footer>
 
 </body>
 </html>
+
+
