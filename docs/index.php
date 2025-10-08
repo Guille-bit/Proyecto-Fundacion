@@ -26,14 +26,14 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Eventos | </title>
-  <link rel="stylesheet" href="style.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/Proyecto-Fundacion/docs/style.css?v=<?= filemtime(__DIR__.'/style.css') ?>">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-
 </head>
-<body class="bg-custom text-white">
+
+<body class="bg-custom white">
 <nav class="navbar navbar-expand-lg navbar-dark bg-custom-navbar shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="index.php">EventosApp</a>
@@ -48,6 +48,9 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#"><i class="bi bi-heart"></i> Favoritos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="eventos.php"><i class=" "></i> Eventos</a>
         </li>
       </ul>
 
@@ -79,11 +82,8 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     </div>
   </div>
 </nav>
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
+<div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
+
 
           <!-- Evento 1 -->
           <div class="carousel-item active">
@@ -213,5 +213,4 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     </div>
   </body>
   </html>
-
 
