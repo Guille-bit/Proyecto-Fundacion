@@ -1,19 +1,30 @@
-.bg-custom {
-  background-color: whitesmoke !important;
+/* === Fondo general === */
+html, body {
+  height: 100%;
+  background-color: white !important;
 }
+
+/* === Fondo personalizado para navbar === */
 .bg-custom-navbar {
   background-color: rgb(111, 0, 255) !important;
-  
 }
+.navbar {
+  position: relative;
+  z-index: 1050; /* mayor que el carrusel */
+}
+
+/* === Navbar: enlaces blancos === */
 .navbar .nav-link {
-  color: white !important; /* dorado */
+  color: white !important;
 }
-.event-img {
-  height: 400px; /* ajusta según lo que te parezca visualmente mejor */
-  object-fit: cover;
+
+/* === Carrusel de eventos === */
+#eventCarousel {
+  height: 100vh; /* 100% de la altura de la pantalla */
 }
+
 #eventCarousel .carousel-item {
-  height: 400px; /* misma altura que las imágenes */
+  height: 85vh;
 }
 
 #eventCarousel .carousel-item img {
@@ -21,13 +32,11 @@
   width: 100%;
   object-fit: cover;
 }
+
+
 .carousel-caption {
-  max-height: 100px;
-  overflow: hidden;
-}
-.carousel-caption {
-  bottom: 30px; /* baja el caption para que no se corte */
-  padding-bottom: 20px; /* añade espacio interno */
+  bottom: 30px;
+  padding-bottom: 20px;
   max-height: none;
   overflow: visible;
 }
@@ -37,14 +46,39 @@
   font-size: 1rem;
   padding: 0.5rem 1rem;
 }
+.carousel-control-prev,
+.carousel-control-next {
+  width: 10%; /* más estrecho para evitar solapamiento con el menú */
+}
 
+/* === Tarjetas de eventos === */
+.event-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.8s ease;
+  background-color: #fff;
+}
 
+.event-card:hover {
+  transform: scale(1.02);
+}
 
+.event-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
 
+.event-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
 
+/* === Menú de usuario desplegable === */
 .user-hover:hover .dropdown-menu {
   display: block;
-  margin-top: 0; /* evita salto visual */
+  margin-top: 0;
 }
 
 .user-hover .dropdown-menu {
@@ -53,30 +87,6 @@
   min-width: 180px;
   transform: translateX(-20%);
 }
-.event-card {
-    
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      transition: transform 0.8s ease;
-      
-    }
-    .event-card:hover {
-      transform: scale(1.02);
-    }
-    .event-img {
-      height: 200px;
-      object-fit: cover;
-    }
-    .event-title {
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-.event-img {
-  width: 100%;       /* Ocupa todo el ancho del contenedor */
-  height: 200px;     /* Altura fija */
-  object-fit: cover; /* Recorta la imagen para que se vea bien */
+h1{
+  color:black
 }
-
-
-
