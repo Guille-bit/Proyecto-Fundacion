@@ -27,13 +27,14 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Eventos | </title>
   <link rel="stylesheet" href="style.css">
-  <script src="js/funciones.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 
 </head>
-<body>
- <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+<body class="bg-custom text-white">
+<nav class="navbar navbar-expand-lg navbar-dark bg-custom-navbar shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="index.php">EventosApp</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
@@ -78,6 +79,58 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     </div>
   </div>
 </nav>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+
+          <!-- Evento 1 -->
+          <div class="carousel-item active">
+            <img src="img/Sala_de_cine.jpg" class="d-block w-100 img-fluid event-img" alt="Festival de Cine">
+            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
+              <h5>Festival de Cine Independiente</h5>
+              <p>12 Oct 2025 - Cines Callao</p>
+              <a href="" class="btn btn-primary mt-2">Reservar</a>
+            </div>
+          </div>
+
+          <!-- Evento 2 -->
+          <div class="carousel-item">
+            <img src="img/programar.jpg" class="d-block w-100 img-fluid event-img" alt="Taller de Programación">
+            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
+              <h5>Taller de Programación Web</h5>
+              <p>15 Oct 2025 - Aula Virtual Medac</p>
+              <a href="" class="btn btn-primary mt-2">Reservar</a>
+
+            </div>
+          </div>
+
+          <!-- Evento 3 -->
+          <div class="carousel-item">
+            <img src="img/artesanal.jpg" class="d-block w-100 img-fluid event-img" alt="Mercado Artesanal">
+            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
+              <h5>Mercado Artesanal de Otoño</h5>
+              <p>18 Oct 2025 - Plaza Mayor</p>
+              <a href="" class="btn btn-primary mt-2">Reservar</a>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Controles -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#eventCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="container py-5">
   <h1 class="mb-4 text-center"><i class="bi bi-watch"></i>Próximos Eventos</h1>
   <div class="row g-4">
