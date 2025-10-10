@@ -83,6 +83,7 @@ $resultado = $connection->query($sql);
               <li><a class="dropdown-item" href="perfil.php"><i class="bi bi-person-circle me-2"></i> Mi perfil</a></li>
               <li><a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión</a></li>
               <li><a class="dropdown-item" href="crear_eventos.php"><i class="bi bi-plus-lg me-2"></i> Crear Eventos</a></li>
+              <li><a class="dropdown-item" href="mis_eventos.php"><i class="bi bi-pencil-square me-2"></i> Mis eventos</a></li>
             <?php endif; ?>
           </ul>
         </li>
@@ -233,4 +234,5 @@ $resultado = $connection->query($sql);
 
 </body>
 </html>
+
 
