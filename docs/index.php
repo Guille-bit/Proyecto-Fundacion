@@ -99,7 +99,7 @@ $resultado = $connection->query($sql);
       <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
         <h5>Tour Santiago Bernabeu</h5>
         <p>12 Oct 2025 - Estadio Santiago Bernabeu</p>
-        <a href="evento_detalle.php?id=1" class="btn btn-primary mt-2">Ver detalles</a>
+        <a href="#" class="btn btn-primary mt-2">Reservar</a>
       </div>
     </div>
     <div class="carousel-item">
@@ -107,7 +107,7 @@ $resultado = $connection->query($sql);
       <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
         <h5>Taller de Programación Web</h5>
         <p>15 Oct 2025 - Aula Virtual Medac</p>
-        <a href="evento_detalle.php?id=2" class="btn btn-primary mt-2">Ver detalles</a>
+        <a href="#" class="btn btn-primary mt-2">Reservar</a>
       </div>
     </div>
     <div class="carousel-item">
@@ -115,7 +115,7 @@ $resultado = $connection->query($sql);
       <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
         <h5>Mercado Artesanal de Otoño</h5>
         <p>18 Oct 2025 - Plaza Mayor</p>
-        <a href="evento_detalle.php?id=3" class="btn btn-primary mt-2">Ver detalles</a>
+        <a href="#" class="btn btn-primary mt-2">Reservar</a>
       </div>
     </div>
   </div>
@@ -126,7 +126,6 @@ $resultado = $connection->query($sql);
     <span class="carousel-control-next-icon"></span>
   </button>
 </div>
-
 <!-- BUSCADOR -->
 <div class="container py-5">
   <form method="GET" class="row align-items-end mb-4">
@@ -152,7 +151,6 @@ $resultado = $connection->query($sql);
       <button type="submit" class="btn btn-light w-100"><i class="bi bi-search"></i> Buscar</button>
     </div>
   </form>
-
   <!-- RESULTADOS DE LA BASE DE DATOS -->
   <div class="row g-4">
     <?php if ($resultado && $resultado->num_rows > 0): ?>
@@ -165,7 +163,7 @@ $resultado = $connection->query($sql);
               <p class="mb-1"><strong><i class="bi bi-calendar-event"></i> Fecha:</strong> <?= date('d M Y', strtotime($evento['start_at'])) ?></p>
               <p class="mb-1"><strong><i class="bi bi-geo-alt"></i> Lugar:</strong> <?= htmlspecialchars($evento['location']) ?></p>
               <span class="badge bg-secondary"><?= htmlspecialchars($evento['category']) ?></span>
-              <a href="evento_detalle.php?id=<?= urlencode($evento['id']) ?>" class="btn btn-outline-dark w-100 mt-3">Ver detalles</a>
+               <a href="reserva.php?id=<?= $evento['id'] ?>" class="btn btn-outline-dark w-100 mt-3">Reservar</a>
             </div>
           </div>
         </div>
@@ -180,7 +178,7 @@ $resultado = $connection->query($sql);
   </div>
 </div>
 
-<!-- SECCIÓN DE PRÓXIMOS EVENTOS -->
+
 <div class="container py-4">
   <h2>Próximos eventos</h2>
   <?php
@@ -212,7 +210,7 @@ $resultado = $connection->query($sql);
                 <?= htmlspecialchars($evento['location']) ?>
               </p>
               <span class="badge bg-secondary"><?= htmlspecialchars($evento['category']) ?></span>
-              <a href="evento_detalle.php?id=<?= urlencode($evento['id']) ?>" class="btn btn-outline-dark w-100 mt-3">Ver detalles</a>
+               <a href="reserva.php?id=<?= $evento['id'] ?>" class="btn btn-outline-dark w-100 mt-3">Reservar</a>
             </div>
           </div>
         </div>
@@ -226,7 +224,6 @@ $resultado = $connection->query($sql);
     <?php endif; ?>
   </div>
 </div>
-
 <footer class="bg-custom-navbar text-white text-center py-4 mt-5">
   <div class="container">
     <p class="mb-1 fw-bold">EventosApp &copy; 2025</p>
