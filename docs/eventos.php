@@ -130,7 +130,7 @@ $resultado = $connection->query($sql);
               <p class="mb-1"><strong><i class="bi bi-calendar-event"></i> Fecha:</strong> <?= date('d M Y', strtotime($evento['start_at'])) ?></p>
               <p class="mb-1"><strong><i class="bi bi-geo-alt"></i> Lugar:</strong> <?= htmlspecialchars($evento['location']) ?></p>
               <span class="badge bg-secondary"><?= htmlspecialchars($evento['category']) ?></span>
-              <a href="#" class="btn btn-outline-dark w-100 mt-3">Reservar</a>
+              <a href="reserva.php?id=<?= $evento['id'] ?>" class="btn btn-outline-dark w-100 mt-3">Reservar</a>
             </div>
           </div>
         </div>
@@ -149,4 +149,5 @@ $resultado = $connection->query($sql);
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
 
