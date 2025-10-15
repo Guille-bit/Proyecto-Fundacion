@@ -84,7 +84,7 @@ function imgUrl(?string $path): string {
 
   <?php if (empty($reservas)): ?>
     <div class="alert alert-info">
-      Aún no tienes reservas. <a href="eventos.php" class="alert-link">Explorar eventos</a>
+      Aún no tienes reservas. <a href="index.php" class="alert-link">Explorar eventos</a>
     </div>
   <?php else: ?>
     <div class="row g-3">
