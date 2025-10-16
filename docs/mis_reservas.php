@@ -57,7 +57,6 @@ function imgUrl(?string $path): string {
     body { background-color: #f8f9fa; }
     .card-img-top { aspect-ratio: 16/9; object-fit: cover; }
     .price { font-weight: 600; color: #0d6efd; }
-    .card.expired { background-color: #e9ecef; opacity: 0.85; }
   </style>
 </head>
 <body>
@@ -88,32 +87,17 @@ function imgUrl(?string $path): string {
       Aún no tienes reservas. <a href="index.php" class="alert-link">Explorar eventos</a>
     </div>
   <?php else: ?>
-    <?php
-      $activos = [];
-      $expirados = [];
-      foreach ($reservas as $r) {
-        $startAt = !empty($r['start_at']) ? new DateTime($r['start_at']) : null;
-        $isExpired = $startAt && $startAt < new DateTime();
-        if ($isExpired) {
-          $expirados[] = $r;
-        } else {
-          $activos[] = $r;
-        }
-      }
-      $ordenados = array_merge($activos, $expirados);
-    ?>
     <div class="row g-3">
-      <?php foreach ($ordenados as $r): ?>
+      <?php foreach ($reservas as $r): ?>
         <?php
           $img     = imgUrl($r['image_path'] ?? null);
           $price   = is_null($r['price']) || $r['price']==='' ? null : (float)$r['price'];
           $total   = $price !== null ? $price * (int)$r['quantity'] : null;
           $startAt = !empty($r['start_at']) ? new DateTime($r['start_at']) : null;
           $resDate = new DateTime($r['reservation_date']);
-          $isExpired = $startAt && $startAt < new DateTime();
         ?>
         <div class="col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm <?= $isExpired ? 'expired' : '' ?>">
+          <div class="card h-100 shadow-sm">
             <img src="<?= e($img) ?>" class="card-img-top"
                  alt="<?= e($r['title'] ?? 'Evento') ?>"
                  onerror="this.onerror=null;this.src='uploads/eventos/default-event.jpg';">
@@ -126,9 +110,6 @@ function imgUrl(?string $path): string {
                 <div class="small text-muted mb-1">
                   <i class="bi bi-calendar-event"></i>
                   <?= $startAt->format('d/m/Y H:i') ?>
-                  <?php if ($isExpired): ?>
-                    <span class="badge bg-secondary ms-2">Finalizado</span>
-                  <?php endif; ?>
                 </div>
               <?php endif; ?>
               <?php if (!empty($r['location'])): ?>
@@ -169,4 +150,3 @@ function imgUrl(?string $path): string {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
