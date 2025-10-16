@@ -29,7 +29,7 @@ $sql = "
   FROM reservations r
   JOIN events e ON e.id = r.event_id
   WHERE r.user_id = ?
-  ORDER BY r.reservation_date DESC
+  ORDER BY e.start_at ASC
 ";
 $stmt = $connection->prepare($sql);
 $stmt->bind_param("i", $userId);
