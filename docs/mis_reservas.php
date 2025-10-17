@@ -98,6 +98,38 @@ function isPastEvent(?string $endAt): bool {
     body { background-color: #f8f9fa; }
     .card-img-top { aspect-ratio: 16/9; object-fit: cover; }
     .price { font-weight: 600; color: #0d6efd; }
+    
+    /* Estilos para eventos pasados */
+    .past-event {
+      opacity: 0.6;
+      background-color: #f8f9fa;
+    }
+    
+    .past-event .card-body {
+      background-color: #e9ecef;
+    }
+    
+    .past-event .card-title {
+      color: #6c757d;
+    }
+    
+    .past-event img {
+      filter: grayscale(50%);
+    }
+    
+    .badge-past {
+      background-color: #6c757d !important;
+    }
+    
+    /* Animación para eliminación */
+    .deleting {
+      animation: fadeOut 0.5s ease-out forwards;
+    }
+    
+    @keyframes fadeOut {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.8); }
+    }
   </style>
 </head>
 <body>
