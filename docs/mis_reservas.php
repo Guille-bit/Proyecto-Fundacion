@@ -325,9 +325,8 @@ document.addEventListener('DOMContentLoaded', function(){
       const card = form.closest('.reservation-item');
       const fd = new FormData(form);
 
-      // CLAVE: el botón no viaja en FormData(form)
       fd.append('eliminar_reserva', '1');
-      fd.append('ajax', '1'); // fuerza modo AJAX en PHP
+      fd.append('ajax', '1');
 
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Cancelando...';
@@ -344,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function(){
         try { data = await r.json(); } catch(_){}
         if (!r.ok || !data || !data.ok) {
           const msg = (data && data.error) ? data.error : ('Error ' + r.status);
-          if (!data) { // ayuda de depuración
+          if (!data) { 
             const txt = await r.text().catch(()=> '');
             console.debug('Respuesta no JSON:', txt.slice(0, 500));
           }
