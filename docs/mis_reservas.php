@@ -2,6 +2,85 @@
 require 'session_boot.php';
 require 'conexion.php';
 
+// --- CSRF ---
+if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
+if (empty($_SESSION['csrf'])) { $_SESSION['csrf'] = bin2hex(random_bytes(32)); }
+$__csrf = $_SESSION['csrf'];
+
+// --- Detectar AJAX de forma robusta ---
+$isAjax = (
+  (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+  || (isset($_POST['ajax']) && $_POST['ajax'] === '1')
+  || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)
+);
+
+// --- Handler robusto de eliminación (AJAX / normal) ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['eliminar_reserva']) || isset($_POST['reservation_id']))) {
+  header_remove('X-Powered-By');
+
+  $reservationId = (int)($_POST['reservation_id'] ?? 0);
+  $userId = (int)($_SESSION['user_id'] ?? 0);
+
+  // Validación básica
+  if ($reservationId <= 0 || $userId <= 0) {
+    if ($isAjax) {
+      header('Content-Type: application/json; charset=utf-8');
+      http_response_code(400);
+      echo json_encode(['ok'=>false,'error'=>'Parámetros inválidos']);
+      exit;
+    }
+    $_SESSION['flash'] = 'No se pudo eliminar la reserva (parámetros inválidos).';
+    header('Location: '.$_SERVER['REQUEST_URI']);
+    exit;
+  }
+
+  // CSRF (si viene token, lo validamos)
+  if (isset($_POST['csrf']) && (!isset($_SESSION['csrf']) || !hash_equals($_SESSION['csrf'], $_POST['csrf']))) {
+    if ($isAjax) {
+      header('Content-Type: application/json; charset=utf-8');
+      http_response_code(403);
+      echo json_encode(['ok'=>false,'error'=>'CSRF inválido']);
+      exit;
+    }
+    $_SESSION['flash'] = 'CSRF inválido al eliminar la reserva.';
+    header('Location: '.$_SERVER['REQUEST_URI']);
+    exit;
+  }
+
+  // Ejecutar DELETE protegido por user_id
+  $stmt = $connection->prepare('DELETE FROM reservations WHERE id = ? AND user_id = ?');
+  if (!$stmt) {
+    if ($isAjax) {
+      header('Content-Type: application/json; charset=utf-8');
+      http_response_code(500);
+      echo json_encode(['ok'=>false,'error'=>'Error preparando consulta']);
+      exit;
+    }
+    $_SESSION['flash'] = 'Error preparando la consulta.';
+    header('Location: '.$_SERVER['REQUEST_URI']);
+    exit;
+  }
+  $stmt->bind_param('ii', $reservationId, $userId);
+  $stmt->execute();
+  $deleted = $stmt->affected_rows > 0;
+  $stmt->close();
+
+  if ($isAjax) {
+    header('Content-Type: application/json; charset=utf-8');
+    if ($deleted) {
+      echo json_encode(['ok'=>true,'deleted_id'=>$reservationId]);
+    } else {
+      http_response_code(404);
+      echo json_encode(['ok'=>false,'error'=>'Reserva no encontrada o no pertenece al usuario']);
+    }
+    exit;
+  } else {
+    $_SESSION['flash'] = $deleted ? 'Reserva eliminada correctamente.' : 'Reserva no encontrada o no pertenece al usuario.';
+    header('Location: '.$_SERVER['REQUEST_URI']);
+    exit;
+  }
+}
+
 // --- Verificar usuario logueado ---
 $userId = $_SESSION['user_id'] ?? null;
 if (!$userId) {
@@ -9,336 +88,336 @@ if (!$userId) {
   exit;
 }
 
-// --- Procesar eliminación de reserva ---
-if (isset($_POST['eliminar_reserva'])) {
-  $reservationId = (int)$_POST['reservation_id'];
-  
-  // Verificar que la reserva pertenece al usuario
-  $sql = "SELECT id FROM reservations WHERE id = ? AND user_id = ?";
-  $stmt = $connection->prepare($sql);
-  $stmt->bind_param("ii", $reservationId, $userId);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  
-  if ($result->num_rows > 0) {
-    $deleteSql = "DELETE FROM reservations WHERE id = ? AND user_id = ?";
-    $deleteStmt = $connection->prepare($deleteSql);
-    $deleteStmt->bind_param("ii", $reservationId, $userId);
-    
-    if ($deleteStmt->execute()) {
-      $mensaje = '<div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check-circle"></i> Reserva eliminada correctamente.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                  </div>';
-    } else {
-      $mensaje = '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle"></i> Error al eliminar la reserva.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                  </div>';
-    }
-  }
-}
-
-// --- Función helper para escapar HTML ---
-function e(?string $s): string { 
-  return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); 
-}
-
-// --- Consultar reservas + datos del evento ---
+// --- Obtener reservas del usuario ---
 $sql = "
   SELECT
     r.id               AS reservation_id,
     r.quantity,
     r.reservation_date,
+    r.estado,
     e.id               AS event_id,
     e.title,
+    e.description,
     e.start_at,
     e.end_at,
     e.location,
     e.image_path,
     e.price,
-    CASE 
-      WHEN e.end_at < NOW() THEN 1 
-      ELSE 0 
-    END AS is_past_event
+    CASE WHEN e.end_at < NOW() THEN 1 ELSE 0 END AS is_past
   FROM reservations r
-  JOIN events e ON e.id = r.event_id
+  INNER JOIN events e ON e.id = r.event_id
   WHERE r.user_id = ?
   ORDER BY e.start_at DESC
 ";
 $stmt = $connection->prepare($sql);
-$stmt->bind_param("i", $userId);
+$stmt->bind_param('i', $userId);
 $stmt->execute();
-$result = $stmt->get_result();
-$reservas = $result->fetch_all(MYSQLI_ASSOC);
+$res = $stmt->get_result();
+$reservas = $res->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
 
-// --- Helper para imágenes con fallback ---
-function imgUrl(?string $path): string {
-  $fallback = 'uploads/eventos/default-event.jpg';
-  if (!$path) return $fallback;
-  return $path;
-}
-
-// --- Helper para verificar si un evento ya pasó ---
-function isPastEvent(?string $endAt): bool {
-  if (!$endAt) return false;
-  return new DateTime($endAt) < new DateTime();
-}
+function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 ?>
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
+  <title>Mis Reservas - EventosApp</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mis reservas</title>
+  <link rel="shortcut icon" href="empresa.png" type="image/x-icon">
+
+  <!-- Bootstrap + Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=<?= filemtime(__DIR__.'/style.css') ?>">
+
   <style>
-    body { background-color: #f8f9fa; }
-    .card-img-top { aspect-ratio: 16/9; object-fit: cover; }
-    .price { font-weight: 600; color: #0d6efd; }
-    
-    /* Estilos para eventos pasados */
-    .past-event {
-      opacity: 0.6;
-      background-color: #f8f9fa;
-    }
-    
-    .past-event .card-body {
-      background-color: #e9ecef;
-    }
-    
-    .past-event .card-title {
-      color: #6c757d;
-    }
-    
-    .past-event img {
-      filter: grayscale(50%);
-    }
-    
-    .badge-past {
-      background-color: #6c757d !important;
-    }
-    
-    /* Animación para eliminación */
-    .deleting {
-      animation: fadeOut 0.5s ease-out forwards;
-    }
-    
-    @keyframes fadeOut {
-      0% { opacity: 1; transform: scale(1); }
-      100% { opacity: 0; transform: scale(0.8); }
-    }
+    body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+    .main-container { background: rgba(255,255,255,0.95); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); backdrop-filter: blur(10px); margin: 2rem 0; }
+    .page-header { background: linear-gradient(135deg, #6f42c1 0%, #845ef7 100%); color:#fff; border-radius: 20px 20px 0 0; padding:2rem; position:relative; overflow:hidden; }
+    .page-header::before { content:''; position:absolute; top:-50%; right:-50%; width:100%; height:200%; background: rgba(255,255,255,0.1); transform: rotate(45deg); }
+    .page-title { position:relative; z-index:2; margin:0; font-weight:700; font-size:2rem; }
+    .stats-badge { position:relative; z-index:2; background: rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.3); backdrop-filter: blur(10px); }
+    .reservation-card { border:none; border-radius:16px; box-shadow:0 8px 25px rgba(0,0,0,0.08); transition:all .3s ease; overflow:hidden; background:#fff; }
+    .reservation-card:hover { transform: translateY(-5px); box-shadow:0 15px 35px rgba(0,0,0,0.15); }
+    .reservation-card.past-event { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); opacity:.85; }
+    .event-image { width:100%; height:200px; object-fit:cover; }
+    .event-image.past { filter: grayscale(50%) brightness(0.9); }
+    .card-content { padding:1.5rem; }
+    .event-title { font-size:1.25rem; font-weight:600; color:#2d3748; margin-bottom:.5rem; }
+    .event-meta { display:flex; flex-direction:column; gap:.5rem; margin-bottom:1rem; }
+    .meta-item { display:flex; align-items:center; gap:.5rem; font-size:.9rem; color:#4a5568; }
+    .meta-icon { width:16px; color:#6f42c1; }
+    .status-badge { display:inline-flex; align-items:center; gap:.25rem; padding:.5rem 1rem; border-radius:50px; font-size:.8rem; font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
+    .badge-upcoming { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color:#fff; box-shadow:0 4px 15px rgba(72,187,120,.3); }
+    .badge-past { background: linear-gradient(135deg, #a0aec0 0%, #718096 100%); color:#fff; }
+    .price-info { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; padding:1rem; border-radius:12px; margin:1rem 0; text-align:center; }
+    .price-amount { font-size:1.5rem; font-weight:700; margin:0; }
+    .price-label { font-size:.8rem; opacity:.9; margin:0; }
+    .action-buttons { display:flex; gap:.75rem; margin-top:1.5rem; }
+    .btn-view { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border:none; color:#fff; padding:.75rem 1.5rem; border-radius:12px; font-weight:600; transition: all .3s ease; }
+    .btn-view:hover { transform: translateY(-2px); box-shadow:0 8px 20px rgba(102,126,234,.4); color:#fff; }
+    .btn-cancel { background: linear-gradient(135deg, #fc8181 0%, #f56565 100%); border:none; color:#fff; padding:.75rem 1.5rem; border-radius:12px; font-weight:600; transition: all .3s ease; flex:1; }
+    .btn-cancel:hover { transform: translateY(-2px); box-shadow:0 8px 20px rgba(252,129,129,.4); color:#fff; }
+    .btn-disabled { background:#e2e8f0; color:#a0aec0; cursor:not-allowed; }
+    .empty-state { text-align:center; padding:4rem 2rem; background:#fff; border-radius:20px; margin:2rem 0; }
+    .empty-icon { font-size:4rem; color:#cbd5e0; margin-bottom:1rem; }
+    .reservation-item { transition: opacity .25s ease, transform .25s ease; }
+    .deleting { animation: fadeOutScale .5s ease-out forwards; }
+    @keyframes fadeOutScale { 0%{opacity:1; transform:scale(1);} 100%{opacity:0; transform:scale(.95);} }
+    .filter-container { background:#fff; padding:1.5rem; border-radius:16px; margin-bottom:2rem; box-shadow:0 4px 15px rgba(0,0,0,.05); }
+    .filter-btn { padding:.75rem 1.5rem; border-radius:50px; border:2px solid #e2e8f0; background:#fff; color:#4a5568; font-weight:600; transition:all .3s ease; }
+    .filter-btn:hover, .filter-btn:checked + .filter-btn { background: linear-gradient(135deg, #6f42c1 0%, #845ef7 100%); border-color:#6f42c1; color:#fff; transform: translateY(-2px); box-shadow:0 8px 20px rgba(111,66,193,.3); }
+    @media (max-width:768px){ .main-container{margin:1rem; border-radius:16px;} .page-header{padding:1.5rem;} .page-title{font-size:1.5rem;} .action-buttons{flex-direction:column;} .event-image{height:150px;} }
   </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-custom-navbar shadow-sm">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="index.php">EventosApp</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div id="nav" class="collapse navbar-collapse">
+    <a class="navbar-brand fw-bold" href="index.php"><i class="bi bi-calendar-event me-2"></i>EventosApp</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="nav">
       <ul class="navbar-nav me-auto">
-        <li class="nav-item"><a class="nav-link" href="eventos.php">Explorar</a></li>
-        <li class="nav-item"><a class="nav-link active" href="mis_reservas.php">Mis reservas</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.php"><i class="bi bi-house me-1"></i>Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.php"><i class="bi bi-search me-1"></i>Explorar</a></li>
+        <li class="nav-item"><a class="nav-link active" href="mis_reservas.php"><i class="bi bi-ticket-perforated me-1"></i>Mis reservas</a></li>
       </ul>
       <div class="d-flex align-items-center gap-3">
-        <span class="text-secondary small"><?= htmlspecialchars($_SESSION['username'] ?? 'Desconocido') ?></span>
-        <a class="btn btn-outline-light btn-sm" href="logout.php">Salir</a>
+        <span class="text-light"><i class="bi bi-person-circle me-1"></i><?= h($_SESSION['username'] ?? 'Usuario') ?></span>
+        <a class="btn btn-outline-light btn-sm" href="logout.php"><i class="bi bi-box-arrow-right me-1"></i>Salir</a>
       </div>
     </div>
   </div>
 </nav>
 
-<main class="container py-4">
-  <h1 class="h4 mb-4">
-    <i class="bi bi-ticket-perforated"></i> Mis reservas
-    <span class="badge bg-primary ms-2"><?= count($reservas) ?></span>
-  </h1>
-
-  <?php if (isset($mensaje)) echo $mensaje; ?>
-
-  <?php if (empty($reservas)): ?>
-    <div class="alert alert-info d-flex align-items-center">
-      <i class="bi bi-info-circle me-2"></i>
-      <div>
-        Aún no tienes reservas. <a href="index.php" class="alert-link fw-bold">Explorar eventos</a>
-      </div>
-    </div>
-  <?php else: ?>
-    
-    <!-- Filtros -->
-    <div class="mb-4">
-      <div class="btn-group" role="group">
-        <input type="radio" class="btn-check" name="filter" id="all" autocomplete="off" checked>
-        <label class="btn btn-outline-primary" for="all">Todos (<?= count($reservas) ?>)</label>
-        
-        <input type="radio" class="btn-check" name="filter" id="upcoming" autocomplete="off">
-        <label class="btn btn-outline-success" for="upcoming">Próximos (<?= count(array_filter($reservas, fn($r) => !$r['is_past_event'])) ?>)</label>
-        
-        <input type="radio" class="btn-check" name="filter" id="past" autocomplete="off">
-        <label class="btn btn-outline-secondary" for="past">Pasados (<?= count(array_filter($reservas, fn($r) => $r['is_past_event'])) ?>)</label>
+<div class="container">
+  <div class="main-container">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1 class="page-title"><i class="bi bi-ticket-perforated me-3"></i>Mis Reservas</h1>
+        <div class="stats-badge badge fs-6"><?= count($reservas) ?> reserva<?= count($reservas) !== 1 ? 's' : '' ?></div>
       </div>
     </div>
 
-    <div class="row g-3" id="reservas-container">
-      <?php foreach ($reservas as $r): ?>
-        <?php
-          $img = imgUrl($r['image_path'] ?? null);
-          $price = is_null($r['price']) || $r['price']==='' ? null : (float)$r['price'];
-          $total = $price !== null ? $price * (int)$r['quantity'] : null;
-          $startAt = !empty($r['start_at']) ? new DateTime($r['start_at']) : null;
-          $endAt = !empty($r['end_at']) ? new DateTime($r['end_at']) : null;
-          $resDate = new DateTime($r['reservation_date']);
-          $isPast = (bool)$r['is_past_event'];
-        ?>
-        <div class="col-md-6 col-lg-4 reservation-item <?= $isPast ? 'past-event-item' : 'upcoming-event-item' ?>" 
-             data-reservation-id="<?= $r['reservation_id'] ?>">
-          <div class="card h-100 shadow-sm <?= $isPast ? 'past-event' : '' ?>">
-            
-            <!-- Badge de estado -->
-            <?php if ($isPast): ?>
-              <div class="position-absolute top-0 end-0 m-2">
-                <span class="badge badge-past">
-                  <i class="bi bi-clock-history"></i> Finalizado
-                </span>
+    <div class="p-4">
+      <?php if (!empty($_SESSION['flash'])): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="bi bi-check-circle me-2"></i><?= h($_SESSION['flash']); unset($_SESSION['flash']); ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <?php endif; ?>
+
+      <?php if (!$reservas): ?>
+        <div class="empty-state">
+          <div class="empty-icon"><i class="bi bi-ticket-perforated"></i></div>
+          <h2 class="empty-title">No tienes reservas aún</h2>
+          <p class="empty-text">¡Explora nuestros increíbles eventos y haz tu primera reserva!</p>
+          <a href="index.php" class="btn btn-primary btn-lg"><i class="bi bi-search me-2"></i>Explorar Eventos</a>
+        </div>
+      <?php else: ?>
+        <!-- Filtros -->
+        <div class="filter-container">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="filter" id="all" autocomplete="off" checked>
+                <label class="filter-btn btn" for="all">Todas (<?= count($reservas) ?>)</label>
+
+                <input type="radio" class="btn-check" name="filter" id="upcoming" autocomplete="off">
+                <label class="filter-btn btn" for="upcoming">Próximas (<?= count(array_filter($reservas, fn($r)=>!$r['is_past'])) ?>)</label>
+
+                <input type="radio" class="btn-check" name="filter" id="past" autocomplete="off">
+                <label class="filter-btn btn" for="past">Pasadas (<?= count(array_filter($reservas, fn($r)=>$r['is_past'])) ?>)</label>
               </div>
-            <?php else: ?>
-              <div class="position-absolute top-0 end-0 m-2">
-                <span class="badge bg-success">
-                  <i class="bi bi-calendar-check"></i> Próximo
-                </span>
-              </div>
-            <?php endif; ?>
-
-            <img src="<?= e($img) ?>" class="card-img-top"
-                 alt="<?= e($r['title'] ?? 'Evento') ?>"
-                 onerror="this.onerror=null;this.src='uploads/eventos/default-event.jpg';">
-            
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title mb-1">
-                <?= e($r['title']) ?>
-              </h5>
-
-              <?php if ($startAt): ?>
-                <div class="small text-muted mb-1">
-                  <i class="bi bi-calendar-event"></i>
-                  <?= $startAt->format('d/m/Y H:i') ?>
-                  <?php if ($endAt && $endAt->format('Y-m-d') !== $startAt->format('Y-m-d')): ?>
-                    - <?= $endAt->format('d/m/Y H:i') ?>
-                  <?php elseif ($endAt): ?>
-                    - <?= $endAt->format('H:i') ?>
-                  <?php endif; ?>
-                </div>
-              <?php endif; ?>
-              
-              <?php if (!empty($r['location'])): ?>
-                <div class="small text-muted mb-2">
-                  <i class="bi bi-geo-alt"></i> <?= e($r['location']) ?>
-                </div>
-              <?php endif; ?>
-
-              <hr class="my-3">
-
-              <div class="d-flex justify-content-between small mb-2">
-                <span>Cantidad: <strong><?= (int)$r['quantity'] ?></strong></span>
-                <?php if ($total !== null): ?>
-                  <span class="price"><?= number_format($total, 2, ',', '.') ?> €</span>
-                <?php else: ?>
-                  <span class="badge text-bg-success">Gratis</span>
-                <?php endif; ?>
-              </div>
-
-              <div class="text-muted small mb-3">
-                Reservado el <?= $resDate->format('d/m/Y H:i') ?>
-              </div>
-
-              <!-- Botones de acción -->
-              <div class="mt-auto">
-                <?php if (!$isPast): ?>
-                  <!-- Solo mostrar botón eliminar para eventos futuros -->
-                  <form method="POST" class="d-inline w-100" onsubmit="return confirmarEliminacion(this, '<?= e($r['title']) ?>')">
-                    <input type="hidden" name="reservation_id" value="<?= $r['reservation_id'] ?>">
-                    <button type="submit" name="eliminar_reserva" class="btn btn-outline-danger btn-sm w-100">
-                      <i class="bi bi-trash3"></i> Cancelar reserva
-                    </button>
-                  </form>
-                <?php else: ?>
-                  <button class="btn btn-secondary btn-sm w-100" disabled>
-                    <i class="bi bi-check-circle"></i> Evento finalizado
-                  </button>
-                <?php endif; ?>
-              </div>
+            </div>
+            <div class="col-md-4 text-end">
+              <small class="text-muted"><i class="bi bi-info-circle me-1"></i>Organiza tus reservas por estado</small>
             </div>
           </div>
         </div>
-      <?php endforeach; ?>
-    </div>
-  <?php endif; ?>
-</main>
 
-<footer class="bg-custom-navbar text-white text-center py-4 mt-5">
-  <div class="container">
-    <p class="mb-1 fw-bold">EventosApp &copy; 2025</p>
-    <p class="mb-0">Tu plataforma para descubrir y reservar eventos únicos</p>
+        <!-- Grid de reservas -->
+        <div id="reservasGrid" class="row g-4" data-reservation-container>
+          <?php foreach ($reservas as $r): ?>
+            <?php
+              $isPast = (bool)$r['is_past'];
+              $startDate = new DateTime($r['start_at']);
+              $endDate = new DateTime($r['end_at']);
+              $reservationDate = new DateTime($r['reservation_date']);
+              $totalPrice = (float)$r['price'] * (int)$r['quantity'];
+            ?>
+            <div class="col-lg-6 col-xl-4 reservation-item <?= $isPast ? 'past-event-item' : 'upcoming-event-item' ?>">
+              <div class="reservation-card <?= $isPast ? 'past-event' : '' ?>">
+                <?php if (!empty($r['image_path'])): ?>
+                  <img src="<?= h($r['image_path']) ?>" class="event-image <?= $isPast ? 'past' : '' ?>" alt="<?= h($r['title']) ?>" onerror="this.src='https://via.placeholder.com/400x200/6f42c1/ffffff?text=Evento'">
+                <?php else: ?>
+                  <div class="event-image d-flex align-items-center justify-content-center bg-light <?= $isPast ? 'past' : '' ?>"><i class="bi bi-image text-muted" style="font-size:3rem;"></i></div>
+                <?php endif; ?>
+
+                <div class="card-content">
+                  <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h3 class="event-title"><?= h($r['title']) ?></h3>
+                    <span class="status-badge <?= $isPast ? 'badge-past' : 'badge-upcoming' ?>">
+                      <i class="bi bi-<?= $isPast ? 'clock-history' : 'calendar-check' ?>"></i><?= $isPast ? 'Finalizado' : 'Próximo' ?>
+                    </span>
+                  </div>
+
+                  <div class="event-meta">
+                    <div class="meta-item"><i class="bi bi-calendar-event meta-icon"></i><span><?= $startDate->format('d/m/Y') ?> - <?= $startDate->format('H:i') ?></span></div>
+                    <div class="meta-item"><i class="bi bi-clock meta-icon"></i><span>Hasta <?= $endDate->format('d/m/Y H:i') ?></span></div>
+                    <div class="meta-item"><i class="bi bi-geo-alt meta-icon"></i><span><?= h($r['location']) ?></span></div>
+                    <div class="meta-item"><i class="bi bi-people meta-icon"></i><span><?= (int)$r['quantity'] ?> persona<?= (int)$r['quantity'] !== 1 ? 's' : '' ?></span></div>
+                    <div class="meta-item"><i class="bi bi-calendar-plus meta-icon"></i><span>Reservado el <?= $reservationDate->format('d/m/Y') ?></span></div>
+                  </div>
+
+                  <div class="price-info">
+                    <?php if ($totalPrice > 0): ?>
+                      <p class="price-amount"><?= number_format($totalPrice, 2, ',', '.') ?> €</p>
+                      <p class="price-label">Total pagado</p>
+                    <?php else: ?>
+                      <p class="price-amount">GRATIS</p>
+                      <p class="price-label">Evento gratuito</p>
+                    <?php endif; ?>
+                  </div>
+
+                  <div class="action-buttons">
+                    <?php if (!$isPast): ?>
+                      <form method="post" class="flex-fill">
+                        <input type="hidden" name="reservation_id" value="<?= (int)$r['reservation_id'] ?>">
+                        <input type="hidden" name="csrf" value="<?= $__csrf ?>">
+                        <button type="submit" name="eliminar_reserva" class="btn btn-cancel w-100"><i class="bi bi-trash3 me-2"></i>Cancelar</button>
+                      </form>
+                    <?php else: ?>
+                      <button class="btn btn-disabled flex-fill" disabled><i class="bi bi-check-circle me-2"></i>Completado</button>
+                    <?php endif; ?>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+
+        <div id="emptyState" class="empty-state d-none">
+          <div class="empty-icon"><i class="bi bi-funnel"></i></div>
+          <h2 class="empty-title">No hay reservas en esta categoría</h2>
+          <p class="empty-text">Cambia el filtro para ver otras reservas</p>
+        </div>
+      <?php endif; ?>
+    </div>
   </div>
-</footer>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Función para confirmar eliminación
-function confirmarEliminacion(form, eventTitle) {
-  if (confirm(`¿Estás seguro de que deseas cancelar tu reserva para "${eventTitle}"?\n\nEsta acción no se puede deshacer.`)) {
-    // Agregar clase de animación
-    const card = form.closest('.reservation-item');
-    card.classList.add('deleting');
-    
-    // Enviar formulario después de un pequeño delay para la animación
-    setTimeout(() => {
-      form.submit();
-    }, 200);
-    
-    return false; // Prevenir envío inmediato
-  }
-  return false;
-}
+// Intercepción AJAX del formulario de eliminar
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('form').forEach(function(form){
+    const submitBtn = form.querySelector('button[name="eliminar_reserva"]');
+    const idField = form.querySelector('input[name="reservation_id"]');
+    if (!submitBtn || !idField) return;
 
-// Filtros de eventos
-document.addEventListener('DOMContentLoaded', function() {
-  const filterButtons = document.querySelectorAll('input[name="filter"]');
-  const reservationItems = document.querySelectorAll('.reservation-item');
-  
-  filterButtons.forEach(button => {
-    button.addEventListener('change', function() {
-      const filter = this.id;
-      
-      reservationItems.forEach(item => {
-        switch(filter) {
-          case 'all':
-            item.style.display = 'block';
-            break;
-          case 'upcoming':
-            item.style.display = item.classList.contains('upcoming-event-item') ? 'block' : 'none';
-            break;
-          case 'past':
-            item.style.display = item.classList.contains('past-event-item') ? 'block' : 'none';
-            break;
+    form.addEventListener('submit', function(ev){
+      ev.preventDefault();
+
+      if (!confirm('¿Estás seguro de que deseas cancelar esta reserva?\n\nEsta acción no se puede deshacer.')) return;
+
+      const card = form.closest('.reservation-item');
+      const fd = new FormData(form);
+
+      // CLAVE: el botón no viaja en FormData(form)
+      fd.append('eliminar_reserva', '1');
+      fd.append('ajax', '1'); // fuerza modo AJAX en PHP
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Cancelando...';
+
+      fetch(location.pathname, {
+        method: 'POST',
+        body: fd,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json'
         }
+      }).then(async (r) => {
+        let data = null;
+        try { data = await r.json(); } catch(_){}
+        if (!r.ok || !data || !data.ok) {
+          const msg = (data && data.error) ? data.error : ('Error ' + r.status);
+          if (!data) { // ayuda de depuración
+            const txt = await r.text().catch(()=> '');
+            console.debug('Respuesta no JSON:', txt.slice(0, 500));
+          }
+          alert('No se pudo eliminar: ' + msg);
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="bi bi-trash3 me-2"></i>Cancelar';
+          return;
+        }
+        if (card) {
+          card.classList.add('deleting');
+          card.addEventListener('animationend', () => {
+            const grid = document.getElementById('reservasGrid');
+            card.remove();
+            updateFilterCounts();
+            if (grid && grid.querySelectorAll('.reservation-item').length === 0) {
+              const empty = document.getElementById('emptyState');
+              if (empty) empty.classList.remove('d-none');
+            }
+          }, { once: true });
+        }
+      }).catch((e) => {
+        console.error(e);
+        alert('Error de red al eliminar la reserva');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="bi bi-trash3 me-2"></i>Cancelar';
       });
     });
   });
 });
 
-// Auto-ocultar alertas después de 5 segundos
+// Filtros de eventos
 document.addEventListener('DOMContentLoaded', function() {
-  const alerts = document.querySelectorAll('.alert:not(.alert-info)');
+  const filterButtons = document.querySelectorAll('input[name="filter"]');
+  const reservationItems = document.querySelectorAll('.reservation-item');
+
+  filterButtons.forEach(button => {
+    button.addEventListener('change', function() {
+      const filter = this.id;
+      reservationItems.forEach(item => {
+        switch(filter) {
+          case 'all': item.style.display = 'block'; break;
+          case 'upcoming': item.style.display = item.classList.contains('upcoming-event-item') ? 'block' : 'none'; break;
+          case 'past': item.style.display = item.classList.contains('past-event-item') ? 'block' : 'none'; break;
+        }
+      });
+      const visibleItems = Array.from(reservationItems).filter(i => i.style.display !== 'none');
+      const emptyState = document.getElementById('emptyState');
+      if (visibleItems.length === 0 && emptyState) emptyState.classList.remove('d-none');
+      else if (emptyState) emptyState.classList.add('d-none');
+    });
+  });
+});
+
+// Actualiza contadores de filtros
+function updateFilterCounts() {
+  const allItems = document.querySelectorAll('.reservation-item');
+  const upcomingItems = document.querySelectorAll('.upcoming-event-item');
+  const pastItems = document.querySelectorAll('.past-event-item');
+
+  const lAll  = document.querySelector('label[for="all"]');
+  const lUp   = document.querySelector('label[for="upcoming"]');
+  const lPast = document.querySelector('label[for="past"]');
+
+  if (lAll)  lAll.textContent  = `Todas (${allItems.length})`;
+  if (lUp)   lUp.textContent   = `Próximas (${upcomingItems.length})`;
+  if (lPast) lPast.textContent = `Pasadas (${pastItems.length})`;
+}
+
+// Auto-ocultar alertas
+document.addEventListener('DOMContentLoaded', function() {
+  const alerts = document.querySelectorAll('.alert');
   alerts.forEach(alert => {
-    setTimeout(() => {
-      const bsAlert = new bootstrap.Alert(alert);
-      bsAlert.close();
-    }, 5000);
+    setTimeout(() => { new bootstrap.Alert(alert).close(); }, 5000);
   });
 });
 </script>
