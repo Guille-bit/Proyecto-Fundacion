@@ -1,3 +1,7 @@
+
+
+
+
 <?php
 // --- Configuración de sesión ---
 ini_set('session.use_strict_mode', '1');
@@ -56,7 +60,9 @@ $resultado = $connection->query($sql);
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-custom-navbar shadow-sm">
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="index.php">EventosApp</a>
+    <a class="navbar-brand fw-bold" href="index.php">
+  <img src="logo3.png" alt="Inicio" class="logo-navbar">
+</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -147,6 +153,7 @@ $resultado = $connection->query($sql);
 </div>
 <!-- BUSCADOR -->
 <div class="container py-5">
+  <h2>Buscador de Eventos</h2>
   <form method="GET" class="row align-items-end mb-4">
     <div class="col-md-4">
       <label class="form-label fw-semibold"><i class="bi bi-search"></i> Buscar evento</label>
@@ -252,5 +259,4 @@ $resultado = $connection->query($sql);
 
 </body>
 </html>
-
 
