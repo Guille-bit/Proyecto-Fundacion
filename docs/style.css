@@ -6,7 +6,7 @@ html, body {
 
 /* === Fondo personalizado para navbar === */
 .bg-custom-navbar {
-  background-color: rgb(111, 0, 255) !important;
+  background-color:#6f00ff  !important;
 }
 .navbar {
   position: relative;
