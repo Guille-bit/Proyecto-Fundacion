@@ -145,6 +145,13 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     border-radius: 0 0 20px 20px;
   }
+  .navbar-brand { 
+    display:flex; align-items:center; gap:.5rem; 
+  }
+  .brand-logo { 
+    height: 80px; width:auto; display:block; vertical-align:middle; 
+  }
+
 
   /* === Fondo general === */
   body {
@@ -420,11 +427,14 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
     .event-image { height:150px; }
   }
 </style>
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="/Proyecto-Fundacion/docs/uploads/eventos/logo4.png"/>
+
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-custom-navbar shadow-sm">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="index.php"><i class="bi bi-calendar-event me-2"></i>EventosApp</a>
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/"> <img src="/Proyecto-Fundacion/docs/uploads/eventos/logo3.png" alt="EventosApp" class="brand-logo"></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
     <div class="collapse navbar-collapse" id="nav">
       <ul class="navbar-nav me-auto">
