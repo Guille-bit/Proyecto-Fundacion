@@ -48,6 +48,7 @@ $resultado = $connection->query($sql);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>EventosApp</title>
+  <link rel="icon" type="image/png" href="/Proyecto-Fundacion/docs/uploads/eventos/logo4.png"/>
   <link rel="shortcut icon" href="empresa.png" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -61,7 +62,7 @@ $resultado = $connection->query($sql);
 <nav class="navbar navbar-expand-lg navbar-dark bg-custom-navbar shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="index.php">
-  <img src="logo3.png" alt="Inicio" class="logo-navbar">
+  <img src="/Proyecto-Fundacion/docs/uploads/eventos/logo3.png" alt="Inicio" class="logo-navbar">
 </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
       <span class="navbar-toggler-icon"></span>

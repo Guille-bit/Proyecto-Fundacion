@@ -14,6 +14,11 @@ body {
   z-index: 1050; /* mayor que el carrusel */
 }
 
+.logo-navbar {
+  max-height: 50px; /* Ajusta este valor según la altura deseada para tu navbar */
+  width: auto; /* Esto asegura que el ancho se ajuste proporcionalmente */
+}
+
 /* === Estilo del header === */
 
 .bg-primary {
