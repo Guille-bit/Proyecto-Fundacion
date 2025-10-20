@@ -1,16 +1,23 @@
 /* === Fondo general === */
-html, body {
+html,
+body {
   height: 100%;
   background-color: white !important;
 }
 
 /* === Fondo personalizado para navbar === */
 .bg-custom-navbar {
-  background-color: rgb(111, 0, 255) !important;
+  background-color: #6f00ff !important;
 }
 .navbar {
   position: relative;
   z-index: 1050; /* mayor que el carrusel */
+}
+
+/* === Estilo del header === */
+
+.bg-primary {
+  background-color: #ffffff !important;
 }
 
 /* === Navbar: enlaces blancos === */
@@ -32,7 +39,6 @@ html, body {
   width: 100%;
   object-fit: cover;
 }
-
 
 .carousel-caption {
   bottom: 30px;
@@ -87,6 +93,6 @@ html, body {
   min-width: 180px;
   transform: translateX(-20%);
 }
-h1{
-  color:black
+h1 {
+  color: black;
 }

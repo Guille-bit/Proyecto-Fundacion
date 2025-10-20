@@ -92,6 +92,24 @@ $resultado = $connection->query($sql);
   </div>
 </nav>
 
+<!-- HEADER EXPLICATIVO -->
+
+<section class="bg-primary text-black text-center py-5">
+  <div class="container">
+    <h1 class="display-4 fw-bold">Descubre Eventos Increíbles Cerca de Ti</h1>
+    <p class="lead mt-3 mb-4">
+      En EventosApp, conectamos personas con experiencias inolvidables. Desde conciertos y talleres hasta conferencias y ferias, encuentra tu próxima aventura o comparte la tuya con el mundo.
+    </p>
+    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+      <?php if (isset($_SESSION['user_id'])): ?>
+        <a href="crear_eventos.php" class="btn btn-outline-dark btn-lg px-4">Crear Mi Evento</a>
+      <?php else: ?>
+        <a href="registro.php" class="btn btn-outline-dark btn-lg px-4">Únete Gratis</a>
+      <?php endif; ?>
+    </div>
+  </div>
+</section>
+
 <!-- SLIDER / CAROUSEL -->
 <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
   <div class="carousel-inner">
