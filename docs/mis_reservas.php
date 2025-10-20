@@ -423,7 +423,6 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
       <ul class="navbar-nav me-auto">
         <li class="nav-item"><a class="nav-link" href="index.php"><i class="bi bi-house me-1"></i>Inicio</a></li>
         <li class="nav-item"><a class="nav-link" href="index.php"><i class="bi bi-search me-1"></i>Explorar</a></li>
-        <li class="nav-item"><a class="nav-link active" href="mis_reservas.php"><i class="bi bi-ticket-perforated me-1"></i>Mis reservas</a></li>
       </ul>
       <div class="d-flex align-items-center gap-3">
         <span class="text-light"><i class="bi bi-person-circle me-1"></i><?= h($_SESSION['username'] ?? 'Usuario') ?></span>
