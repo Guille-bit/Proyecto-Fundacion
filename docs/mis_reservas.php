@@ -175,6 +175,7 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
   }
 
   .page-header::before {
+    display: flex; justify-content: space-between;
     content:'';
     position: absolute;
     top:-50%;
@@ -194,6 +195,7 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
   }
 
   .stats-badge {
+    display: flex; justify-content: space-between;
     position:relative;
     z-index:2;
     background: rgba(255,255,255,0.2);
