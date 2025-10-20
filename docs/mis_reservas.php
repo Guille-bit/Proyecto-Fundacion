@@ -129,47 +129,292 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
   <!-- Bootstrap + Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=<?= filemtime(__DIR__.'/style.css') ?>">
 
-  <style>
-    body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
-    .main-container { background: rgba(255,255,255,0.95); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); backdrop-filter: blur(10px); margin: 2rem 0; }
-    .page-header { background: linear-gradient(135deg, #6f42c1 0%, #845ef7 100%); color:#fff; border-radius: 20px 20px 0 0; padding:2rem; position:relative; overflow:hidden; }
-    .page-header::before { content:''; position:absolute; top:-50%; right:-50%; width:100%; height:200%; background: rgba(255,255,255,0.1); transform: rotate(45deg); }
-    .page-title { position:relative; z-index:2; margin:0; font-weight:700; font-size:2rem; }
-    .stats-badge { position:relative; z-index:2; background: rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.3); backdrop-filter: blur(10px); }
-    .reservation-card { border:none; border-radius:16px; box-shadow:0 8px 25px rgba(0,0,0,0.08); transition:all .3s ease; overflow:hidden; background:#fff; }
-    .reservation-card:hover { transform: translateY(-5px); box-shadow:0 15px 35px rgba(0,0,0,0.15); }
-    .reservation-card.past-event { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); opacity:.85; }
-    .event-image { width:100%; height:200px; object-fit:cover; }
-    .event-image.past { filter: grayscale(50%) brightness(0.9); }
-    .card-content { padding:1.5rem; }
-    .event-title { font-size:1.25rem; font-weight:600; color:#2d3748; margin-bottom:.5rem; }
-    .event-meta { display:flex; flex-direction:column; gap:.5rem; margin-bottom:1rem; }
-    .meta-item { display:flex; align-items:center; gap:.5rem; font-size:.9rem; color:#4a5568; }
-    .meta-icon { width:16px; color:#6f42c1; }
-    .status-badge { display:inline-flex; align-items:center; gap:.25rem; padding:.5rem 1rem; border-radius:50px; font-size:.8rem; font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
-    .badge-upcoming { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color:#fff; box-shadow:0 4px 15px rgba(72,187,120,.3); }
-    .badge-past { background: linear-gradient(135deg, #a0aec0 0%, #718096 100%); color:#fff; }
-    .price-info { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; padding:1rem; border-radius:12px; margin:1rem 0; text-align:center; }
-    .price-amount { font-size:1.5rem; font-weight:700; margin:0; }
-    .price-label { font-size:.8rem; opacity:.9; margin:0; }
-    .action-buttons { display:flex; gap:.75rem; margin-top:1.5rem; }
-    .btn-view { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border:none; color:#fff; padding:.75rem 1.5rem; border-radius:12px; font-weight:600; transition: all .3s ease; }
-    .btn-view:hover { transform: translateY(-2px); box-shadow:0 8px 20px rgba(102,126,234,.4); color:#fff; }
-    .btn-cancel { background: linear-gradient(135deg, #fc8181 0%, #f56565 100%); border:none; color:#fff; padding:.75rem 1.5rem; border-radius:12px; font-weight:600; transition: all .3s ease; flex:1; }
-    .btn-cancel:hover { transform: translateY(-2px); box-shadow:0 8px 20px rgba(252,129,129,.4); color:#fff; }
-    .btn-disabled { background:#e2e8f0; color:#a0aec0; cursor:not-allowed; }
-    .empty-state { text-align:center; padding:4rem 2rem; background:#fff; border-radius:20px; margin:2rem 0; }
-    .empty-icon { font-size:4rem; color:#cbd5e0; margin-bottom:1rem; }
-    .reservation-item { transition: opacity .25s ease, transform .25s ease; }
-    .deleting { animation: fadeOutScale .5s ease-out forwards; }
-    @keyframes fadeOutScale { 0%{opacity:1; transform:scale(1);} 100%{opacity:0; transform:scale(.95);} }
-    .filter-container { background:#fff; padding:1.5rem; border-radius:16px; margin-bottom:2rem; box-shadow:0 4px 15px rgba(0,0,0,.05); }
-    .filter-btn { padding:.75rem 1.5rem; border-radius:50px; border:2px solid #e2e8f0; background:#fff; color:#4a5568; font-weight:600; transition:all .3s ease; }
-    .filter-btn:hover, .filter-btn:checked + .filter-btn { background: linear-gradient(135deg, #6f42c1 0%, #845ef7 100%); border-color:#6f42c1; color:#fff; transform: translateY(-2px); box-shadow:0 8px 20px rgba(111,66,193,.3); }
-    @media (max-width:768px){ .main-container{margin:1rem; border-radius:16px;} .page-header{padding:1.5rem;} .page-title{font-size:1.5rem;} .action-buttons{flex-direction:column;} .event-image{height:150px;} }
-  </style>
+
+ <style>
+  /* === Navbar === */
+  .bg-custom-navbar {
+    background: linear-gradient(135deg, #6f00ff 0%, #7b33ff 100%);
+    height: 80px;
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border-radius: 0 0 20px 20px;
+  }
+
+  /* === Fondo general === */
+  body {
+    background: linear-gradient(135deg, #ffffffff 0%, #fdfdfdff 100%);
+    min-height: 100vh;
+  }
+
+  /* === Contenedor principal === */
+  .main-container {
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    margin: 2rem 0;
+  }
+
+  /* === Cabecera de página === */
+  .page-header {
+    background: linear-gradient(135deg, #79787842 0%, #6f00ff 100%);
+    color: #fff;
+    border-radius: 20px 20px 0 0;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    height: 80px; /* MISMA ALTURA QUE NAVBAR */
+    display: flex;
+    align-items: center;
+  }
+
+  .page-header::before {
+    display: flex; justify-content: space-between;
+    content:'';
+    position: absolute;
+    top:-50%;
+    right:-50%;
+    width:100%;
+    height:50%;
+    background: rgba(255,255,255,0.1);
+    transform: rotate(45deg);
+  }
+
+  .page-title {
+    position:relative;
+    z-index:2;
+    margin:0;
+    font-weight:700;
+    font-size:1.8rem;
+  }
+
+  .stats-badge {
+    display: flex; justify-content: space-between;
+    position:relative;
+    z-index:2;
+    background: rgba(255,255,255,0.2);
+    border:1px solid rgba(255,255,255,0.3);
+    backdrop-filter: blur(10px);
+  }
+
+  /* === Tarjetas === */
+  .reservation-card {
+    border:none;
+    border-radius:16px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.08);
+    transition:all .3s ease;
+    overflow:hidden;
+    background:#fff;
+  }
+
+  .reservation-card:hover {
+    transform: translateY(-5px);
+    box-shadow:0 15px 35px rgba(0,0,0,0.15);
+  }
+
+  .event-image {
+    width:100%;
+    height:200px;
+    object-fit:cover;
+  }
+
+  .event-image.past {
+    filter: grayscale(50%) brightness(0.9);
+  }
+
+  .card-content {
+    padding:1.5rem;
+  }
+
+  .event-title {
+    font-size:1.25rem;
+    font-weight:600;
+    color:#2d3748;
+    margin-bottom:.5rem;
+  }
+
+  .event-meta {
+    display:flex;
+    flex-direction:column;
+    gap:.5rem;
+    margin-bottom:1rem;
+  }
+
+  .meta-item {
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+    font-size:.9rem;
+    color:#4a5568;
+  }
+
+  .meta-icon {
+    width:16px;
+    color:#6f42c1;
+  }
+
+  /* === Estados === */
+  .status-badge {
+    display:inline-flex;
+    align-items:center;
+    gap:.25rem;
+    padding:.5rem 1rem;
+    border-radius:50px;
+    font-size:.8rem;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+  }
+
+  .badge-upcoming {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color:#fff;
+    box-shadow:0 4px 15px rgba(72,187,120,.3);
+  }
+
+  .badge-past {
+    background: linear-gradient(135deg, #a0aec0 0%, #6f00ff 100%);
+    color:#fff;
+  }
+
+  /* === Precio === */
+  .price-info {
+    background: linear-gradient(135deg, #ffffffff 0%, #6f00ff 100%);
+    color:#fff;
+    padding:1rem;
+    border-radius:12px;
+    margin:1rem 0;
+    text-align:center;
+  }
+
+  .price-amount {
+    font-size:1.5rem;
+    font-weight:700;
+    margin:0;
+  }
+
+  .price-label {
+    font-size:.8rem;
+    opacity:.9;
+    margin:0;
+  }
+
+  /* === Botones === */
+  .action-buttons {
+    display:flex;
+    gap:.75rem;
+    margin-top:1.5rem;
+  }
+
+  .btn-view {
+    background: linear-gradient(135deg, #fdfdfdff 0%, #efeff0ff 100%);
+    border:none;
+    color:#fff;
+    padding:.75rem 1.5rem;
+    border-radius:12px;
+    font-weight:600;
+    transition: all .3s ease;
+  }
+
+  .btn-view:hover {
+    transform: translateY(-2px);
+    box-shadow:0 8px 20px rgba(243, 243, 243, 0.4);
+    color:#fff;
+  }
+
+  .btn-cancel {
+    background: linear-gradient(135deg, #ff2a2aff 0%, #fd5353ff 100%);
+    border:none;
+    color:#fff;
+    padding:.75rem 1.5rem;
+    border-radius:12px;
+    font-weight:600;
+    transition: all .3s ease;
+    flex:1;
+  }
+
+  .btn-cancel:hover {
+    transform: translateY(-2px);
+    box-shadow:0 8px 20px rgba(252,129,129,.4);
+    color:#fff;
+  }
+
+  .btn-disabled {
+    background:#e2e8f0;
+    color:#a0aec0;
+    cursor:not-allowed;
+  }
+
+  /* === Estados vacíos === */
+  .empty-state {
+    text-align:center;
+    padding:4rem 2rem;
+    background:#fff;
+    border-radius:20px;
+    margin:2rem 0;
+  }
+
+  .empty-icon {
+    font-size:4rem;
+    color:#cbd5e0;
+    margin-bottom:1rem;
+  }
+
+  .reservation-item {
+    transition: opacity .25s ease, transform .25s ease;
+  }
+
+  .deleting {
+    animation: fadeOutScale .5s ease-out forwards;
+  }
+
+  @keyframes fadeOutScale {
+    0% { opacity:1; transform:scale(1); }
+    100% { opacity:0; transform:scale(.95); }
+  }
+
+  /* === Filtros === */
+  .filter-container {
+    background:#fff;
+    padding:1.5rem;
+    border-radius:16px;
+    margin-bottom:2rem;
+    box-shadow:0 4px 15px rgba(0,0,0,.05);
+  }
+
+  .filter-btn {
+    padding:.75rem 1.5rem;
+    border-radius:50px;
+    border:2px solid #e2e8f0;
+    background:#fff;
+    color:#4a5568;
+    font-weight:600;
+    transition:all .3s ease;
+  }
+
+  .filter-btn:hover, .filter-btn:checked + .filter-btn {
+    background: linear-gradient(135deg, #ebeaeeff 0%, #6f00ff 100%);
+    border-color:#6f42c1;
+    color:#fff;
+    transform: translateY(-2px);
+    box-shadow:0 8px 20px rgba(245, 245, 245, 0.3);
+  }
+
+  /* === Responsive === */
+  @media (max-width:400px){
+    .main-container { margin:1rem; border-radius:16px; }
+    .page-header { padding:1rem; height: 70px; }
+    .page-title { font-size:1rem; }
+    .action-buttons { flex-direction:column; }
+    .event-image { height:150px; }
+  }
+</style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-custom-navbar shadow-sm">
@@ -180,7 +425,6 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
       <ul class="navbar-nav me-auto">
         <li class="nav-item"><a class="nav-link" href="index.php"><i class="bi bi-house me-1"></i>Inicio</a></li>
         <li class="nav-item"><a class="nav-link" href="index.php"><i class="bi bi-search me-1"></i>Explorar</a></li>
-        <li class="nav-item"><a class="nav-link active" href="mis_reservas.php"><i class="bi bi-ticket-perforated me-1"></i>Mis reservas</a></li>
       </ul>
       <div class="d-flex align-items-center gap-3">
         <span class="text-light"><i class="bi bi-person-circle me-1"></i><?= h($_SESSION['username'] ?? 'Usuario') ?></span>
