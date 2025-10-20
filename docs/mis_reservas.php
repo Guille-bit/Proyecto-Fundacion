@@ -162,46 +162,51 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
   }
 
   /* === Cabecera de página === */
-  .page-header {
-    background: linear-gradient(135deg, #79787842 0%, #6f00ff 100%);
-    color: #fff;
-    border-radius: 20px 20px 0 0;
-    padding: 2rem;
-    position: relative;
-    overflow: hidden;
-    height: 80px; /* MISMA ALTURA QUE NAVBAR */
-    display: flex;
-    align-items: center;
-  }
+.page-header {
+  background: linear-gradient(135deg, #b58aff 0%, #6f00ff 100%);
+  color: #fff;
+  border-radius: 20px 20px 0 0;
+  padding: 1.5rem 2rem;
+  height: 80px; /* igual que la navbar */
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
 
-  .page-header::before {
-    display: flex; justify-content: space-between;
-    content:'';
-    position: absolute;
-    top:-50%;
-    right:-50%;
-    width:100%;
-    height:50%;
-    background: rgba(255,255,255,0.1);
-    transform: rotate(45deg);
-  }
+/* Eliminamos el fondo que causaba el hueco morado */
+.page-header::before {
+  display: none;
+}
 
-  .page-title {
-    position:relative;
-    z-index:2;
-    margin:0;
-    font-weight:700;
-    font-size:1.8rem;
-  }
+/* Título */
+.page-title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 
-  .stats-badge {
-    display: flex; justify-content: space-between;
-    position:relative;
-    z-index:2;
-    background: rgba(255,255,255,0.2);
-    border:1px solid rgba(255,255,255,0.3);
-    backdrop-filter: blur(10px);
-  }
+/* Contador (badge) */
+.stats-badge {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* Aseguramos que el contenedor interno ocupe todo el ancho */
+.page-header .d-flex {
+  width: 100%;
+}
 
   /* === Tarjetas === */
   .reservation-card {
