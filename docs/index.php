@@ -96,26 +96,6 @@ $resultado = $connection->query($sql);
 </nav>
 
 <!-- HEADER EXPLICATIVO -->
-<<<<<<< Updated upstream
-<div class="hero-container position-relative">
-  <div class="hero-text position-absolute">
-    <h2 class="fw-bold fs-4">Descubre Eventos Increíbles Cerca de Ti</h2>
-    <p class="mt-2 mb-3">
-      En EventosApp, conectamos personas con experiencias inolvidables. Desde conciertos y talleres hasta conferencias y ferias, encuentra tu próxima aventura o comparte la tuya con el mundo.
-    </p>
-    <div class="d-grid gap-2 d-sm-flex">
-      <?php if (isset($_SESSION['user_id'])): ?>
-        <a href="crear_eventos.php" class="btn btn-light btn-sm px-3">Crear Mi Evento</a>
-      <?php else: ?>
-        <a href="registro.php" class="btn btn-light btn-sm px-3">Únete Gratis</a>
-      <?php endif; ?>
-    </div>
-  </div>
-</div>
-
-
-=======
-
 <div class="hero-container">
   <div class="hero-text-wrapper">
   <div class="hero-text">
