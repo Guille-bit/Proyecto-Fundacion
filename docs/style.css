@@ -23,10 +23,10 @@ body {
 
 .hero-container {
   position: relative;
-  height: 90vh; /* Altura fija para evitar que se superponga con el contenido de abajo */
+  height: 90vh;
   width: 100%;
   color: white;
-  overflow: hidden; /* Importante para que el carrusel no se desborde */
+  overflow: hidden;
 }
 
 /* === Texto superpuesto del Hero === */
@@ -36,17 +36,16 @@ body {
   border-radius: 15px;
   text-align: left;
   max-width: 50%;
-  /* Posicionamiento inicial para escritorio */
   margin-left: 10%;
 }
 
 .hero-text-wrapper {
   position: relative;
-  z-index: 2; /* Por encima del carrusel */
+  z-index: 2;
   height: 100%;
   display: flex;
-  align-items: center; /* Centra verticalmente */
-  /* El centrado horizontal se controla en las media queries */
+  align-items: flex-start;
+  padding-top: 15vh;
 }
 
 #eventCarousel {
@@ -76,7 +75,7 @@ body {
 /* Móviles (hasta 768px) */
 @media (max-width: 768px) {
   .hero-container {
-    height: 80vh; /* Ajustamos la altura para móviles */
+    height: 80vh;
   }
 
   /* Centramos el contenido del wrapper */
@@ -86,7 +85,7 @@ body {
 
   .hero-text {
     max-width: 85%;
-    margin-left: 0; /* MUY IMPORTANTE: quitamos el margen para que el centrado funcione */
+    margin-left: 0;
     text-align: center;
     padding: 1.5rem;
   }

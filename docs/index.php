@@ -112,7 +112,8 @@ $resultado = $connection->query($sql);
       </div>
   </div>
   </div>
->>>>>>> Stashed changes
+</div>
+
 <!-- SLIDER / CAROUSEL -->
 <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
   <div class="carousel-inner">
