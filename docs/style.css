@@ -11,12 +11,12 @@ body {
 }
 .navbar {
   position: relative;
-  z-index: 1050; /* mayor que el carrusel */
+  z-index: 1050;
 }
 
 .logo-navbar {
-  max-height: 50px; /* Ajusta este valor según la altura deseada para tu navbar */
-  width: auto; /* Esto asegura que el ancho se ajuste proporcionalmente */
+  max-height: 50px;
+  width: auto;
 }
 
 /* === Estilo del header y carousel === */
@@ -28,20 +28,20 @@ body {
 
 /* === Texto superpuesto del Hero === */
 .hero-text {
-  position: absolute; /* Superpone este elemento sobre el carrusel */
-  top: 5%; /* Lo posiciona cerca de la parte superior */
-  left: 10%; /* Lo desplaza desde la izquierda */
-  z-index: 10; /* Asegura que esté por encima del carrusel */
-  background-color: rgba(0, 0, 0, 0.5); /* Fondo negro con 50% de opacidad */
+  position: absolute;
+  top: 5%;
+  left: 10%;
+  z-index: 10;
+  background-color: rgba(0, 0, 0, 0.5);
   padding: 2.5rem;
   border-radius: 15px;
-  max-width: 50%; /* Limita el ancho del texto */
-  text-align: left; /* Alinea el texto a la izquierda */
+  max-width: 50%;
+  text-align: left;
 }
 
 /* === Ajustes para el título dentro del Hero === */
 .hero-text h1 {
-  color: white; /* Cambia el color del título a blanco */
+  color: white;
 }
 
 /* === Ajuste para pantallas pequeñas === */
@@ -61,7 +61,7 @@ body {
 
 /* === Carrusel de eventos === */
 #eventCarousel {
-  height: 100vh; /* 100% de la altura de la pantalla */
+  height: 100vh;
 }
 
 #eventCarousel .carousel-item {
@@ -88,7 +88,7 @@ body {
 }
 .carousel-control-prev,
 .carousel-control-next {
-  width: 10%; /* más estrecho para evitar solapamiento con el menú */
+  width: 10%;
 }
 
 /* === Tarjetas de eventos === */
