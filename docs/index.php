@@ -101,21 +101,21 @@ $resultado = $connection->query($sql);
 
 <!-- HEADER EXPLICATIVO -->
 
-<section class="bg-primary text-black text-center py-5">
-  <div class="container">
-    <h1 class="display-4 fw-bold">Descubre Eventos Increíbles Cerca de Ti</h1>
-    <p class="lead mt-3 mb-4">
-      En EventosApp, conectamos personas con experiencias inolvidables. Desde conciertos y talleres hasta conferencias y ferias, encuentra tu próxima aventura o comparte la tuya con el mundo.
-    </p>
-    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-      <?php if (isset($_SESSION['user_id'])): ?>
-        <a href="crear_eventos.php" class="btn btn-outline-dark btn-lg px-4">Crear Mi Evento</a>
-      <?php else: ?>
-        <a href="registro.php" class="btn btn-outline-dark btn-lg px-4">Únete Gratis</a>
-      <?php endif; ?>
-    </div>
+<div class="hero-container">
+
+  <div class="hero-text">
+      <h1 class="display-4 fw-bold">Descubre Eventos Increíbles Cerca de Ti</h1>
+      <p class="lead mt-3 mb-4">
+          En EventosApp, conectamos personas con experiencias inolvidables. Desde conciertos y talleres hasta conferencias y ferias, encuentra tu próxima aventura o comparte la tuya con el mundo.
+      </p>
+      <div class="d-grid gap-2 d-sm-flex">
+          <?php if (isset($_SESSION['user_id'])): ?>
+              <a href="crear_eventos.php" class="btn btn-light btn-lg px-4">Crear Mi Evento</a>
+          <?php else: ?>
+              <a href="registro.php" class="btn btn-light btn-lg px-4">Únete Gratis</a>
+          <?php endif; ?>
+      </div>
   </div>
-</section>
 
 <!-- SLIDER / CAROUSEL -->
 <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -148,7 +148,7 @@ $resultado = $connection->query($sql);
   <button class="carousel-control-prev" type="button" data-bs-target="#eventCarousel" data-bs-slide="prev">
     <span class="carousel-control-prev-icon"></span>
   </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
+<button class="carousel-control-next" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
     <span class="carousel-control-next-icon"></span>
   </button>
 </div>

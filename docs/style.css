@@ -19,10 +19,39 @@ body {
   width: auto; /* Esto asegura que el ancho se ajuste proporcionalmente */
 }
 
-/* === Estilo del header === */
+/* === Estilo del header y carousel === */
 
-.bg-primary {
-  background-color: #ffffff !important;
+.hero-container {
+  position: relative;
+  color: white;
+}
+
+/* === Texto superpuesto del Hero === */
+.hero-text {
+  position: absolute; /* Superpone este elemento sobre el carrusel */
+  top: 5%; /* Lo posiciona cerca de la parte superior */
+  left: 10%; /* Lo desplaza desde la izquierda */
+  z-index: 10; /* Asegura que esté por encima del carrusel */
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo negro con 50% de opacidad */
+  padding: 2.5rem;
+  border-radius: 15px;
+  max-width: 50%; /* Limita el ancho del texto */
+  text-align: left; /* Alinea el texto a la izquierda */
+}
+
+/* === Ajustes para el título dentro del Hero === */
+.hero-text h1 {
+  color: white; /* Cambia el color del título a blanco */
+}
+
+/* === Ajuste para pantallas pequeñas === */
+@media (max-width: 768px) {
+  .hero-text {
+    max-width: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
 }
 
 /* === Navbar: enlaces blancos === */
