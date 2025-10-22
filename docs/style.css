@@ -23,20 +23,39 @@ body {
 
 .hero-container {
   position: relative;
+  height: 90vh; /* Altura fija para evitar que se superponga con el contenido de abajo */
+  width: 100%;
   color: white;
+  overflow: hidden; /* Importante para que el carrusel no se desborde */
 }
 
 /* === Texto superpuesto del Hero === */
 .hero-text {
-  position: absolute;
-  top: 5rem;
-  left: 10%;
-  z-index: 10;
-  background-color: rgba(0, 0, 0, 0.5);
   padding: 2.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
   border-radius: 15px;
-  max-width: 50%;
   text-align: left;
+  max-width: 50%;
+  /* Posicionamiento inicial para escritorio */
+  margin-left: 10%;
+}
+
+.hero-text-wrapper {
+  position: relative;
+  z-index: 2; /* Por encima del carrusel */
+  height: 100%;
+  display: flex;
+  align-items: center; /* Centra verticalmente */
+  /* El centrado horizontal se controla en las media queries */
+}
+
+#eventCarousel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 
 /* === Ajustes para el título dentro del Hero === */
@@ -44,24 +63,30 @@ body {
   color: white;
 }
 
-/* === AJUSTES RESPONSIVE COMPLETOS PARA EL HERO === */
+/* === AJUSTES RESPONSIVE COMPLETOS === */
 
-/* Para tablets y pantallas medianas (hasta 992px) */
+/* Tablets (hasta 992px) */
 @media (max-width: 992px) {
   .hero-text {
     max-width: 70%;
-    left: 8%;
+    margin-left: 8%;
   }
 }
 
-/* Para tablets en vertical y móviles grandes (hasta 768px) */
+/* Móviles (hasta 768px) */
 @media (max-width: 768px) {
+  .hero-container {
+    height: 80vh; /* Ajustamos la altura para móviles */
+  }
+
+  /* Centramos el contenido del wrapper */
+  .hero-text-wrapper {
+    justify-content: center;
+  }
+
   .hero-text {
     max-width: 85%;
-
-    left: 50%;
-    transform: translateX(-50%);
-
+    margin-left: 0; /* MUY IMPORTANTE: quitamos el margen para que el centrado funcione */
     text-align: center;
     padding: 1.5rem;
   }
@@ -71,17 +96,14 @@ body {
   }
 }
 
-/* Para móviles pequeños (hasta 480px) */
+/* Móviles pequeños (hasta 480px) */
 @media (max-width: 480px) {
   .hero-text h1 {
     font-size: 2rem;
   }
-
   .hero-text .lead {
     font-size: 0.9rem;
-    margin-bottom: 1.5rem !important;
   }
-
   .hero-text .btn {
     width: 100%;
   }
