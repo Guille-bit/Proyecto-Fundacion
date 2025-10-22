@@ -1,7 +1,4 @@
 
-
-
-
 <?php
 // --- Configuración de sesión ---
 ini_set('session.use_strict_mode', '1');
@@ -48,8 +45,7 @@ $resultado = $connection->query($sql);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>EventosApp</title>
-  <link rel="icon" type="image/png" href="/Proyecto-Fundacion/docs/uploads/eventos/logo4.png"/>
-  <link rel="shortcut icon" href="empresa.png" type="image/x-icon">
+  <link rel="icon" type="image/png" href="uploads/eventos/logo5.png"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link rel="stylesheet" href="style.css?v=<?= filemtime(__DIR__.'/style.css') ?>">
@@ -62,15 +58,15 @@ $resultado = $connection->query($sql);
 <nav class="navbar navbar-expand-lg navbar-dark bg-custom-navbar shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="index.php">
-  <img src="/Proyecto-Fundacion/docs/uploads/eventos/logo3.png" alt="Inicio" class="logo-navbar">
+  <img src="uploads/eventos/logo4.png" alt="Inicio" class="logo-navbar">EventosApp
 </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarMenu">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link" href="mis_reservas.php">Mis reservas</a></li>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-4">
+        <li class="nav-item"><a class="nav-link" href="mis_reservas.php"><i class="bi bi-calendar-check me-2"></i>Mis reservas</a></li>
         <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-heart"></i> Favoritos</a></li>
         <li class="nav-item"><a class="nav-link" href="eventos.php">Eventos</a></li>
       </ul>
@@ -100,22 +96,22 @@ $resultado = $connection->query($sql);
 </nav>
 
 <!-- HEADER EXPLICATIVO -->
-
-<div class="hero-container">
-
-  <div class="hero-text">
-      <h1 class="display-4 fw-bold">Descubre Eventos Increíbles Cerca de Ti</h1>
-      <p class="lead mt-3 mb-4">
-          En EventosApp, conectamos personas con experiencias inolvidables. Desde conciertos y talleres hasta conferencias y ferias, encuentra tu próxima aventura o comparte la tuya con el mundo.
-      </p>
-      <div class="d-grid gap-2 d-sm-flex">
-          <?php if (isset($_SESSION['user_id'])): ?>
-              <a href="crear_eventos.php" class="btn btn-light btn-lg px-4">Crear Mi Evento</a>
-          <?php else: ?>
-              <a href="registro.php" class="btn btn-light btn-lg px-4">Únete Gratis</a>
-          <?php endif; ?>
-      </div>
+<div class="hero-container position-relative">
+  <div class="hero-text position-absolute">
+    <h2 class="fw-bold fs-4">Descubre Eventos Increíbles Cerca de Ti</h2>
+    <p class="mt-2 mb-3">
+      En EventosApp, conectamos personas con experiencias inolvidables. Desde conciertos y talleres hasta conferencias y ferias, encuentra tu próxima aventura o comparte la tuya con el mundo.
+    </p>
+    <div class="d-grid gap-2 d-sm-flex">
+      <?php if (isset($_SESSION['user_id'])): ?>
+        <a href="crear_eventos.php" class="btn btn-light btn-sm px-3">Crear Mi Evento</a>
+      <?php else: ?>
+        <a href="registro.php" class="btn btn-light btn-sm px-3">Únete Gratis</a>
+      <?php endif; ?>
+    </div>
   </div>
+</div>
+
 
 <!-- SLIDER / CAROUSEL -->
 <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -260,4 +256,5 @@ $resultado = $connection->query($sql);
 
 </body>
 </html>
+
 
