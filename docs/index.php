@@ -17,7 +17,13 @@ ini_set('session.save_path', $__sess_dir);
 if (session_status() !== PHP_SESSION_ACTIVE) {
   session_start();
 }
-
+// --- Verificar si el usuario es administrador ---
+$isAdmin = false;
+if (!empty($_SESSION['is_admin']) && (int)$_SESSION['is_admin'] === 1) {
+    $isAdmin = true;
+} elseif (!empty($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+    $isAdmin = true;
+}
 include 'conexion.php';
 
 // --- Captura filtros ---
@@ -85,8 +91,10 @@ $resultado = $connection->query($sql);
             <?php else: ?>
               <li><a class="dropdown-item" href="perfil.php"><i class="bi bi-person-circle me-2"></i> Mi perfil</a></li>
               <li><a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión</a></li>
-              <li><a class="dropdown-item" href="crear_eventos.php"><i class="bi bi-plus-lg me-2"></i> Crear Eventos</a></li>
-              <li><a class="dropdown-item" href="mis_eventos.php"><i class="bi bi-pencil-square me-2"></i> Mis eventos</a></li>
+              <?php if ($isAdmin): ?>
+                <li><a class="dropdown-item" href="crear_eventos.php"><i class="bi bi-plus-lg me-2"></i> Crear Eventos</a></li>
+                <li><a class="dropdown-item" href="mis_eventos.php"><i class="bi bi-pencil-square me-2"></i> Mis eventos</a></li>
+              <?php endif; ?>
             <?php endif; ?>
           </ul>
         </li>

@@ -3,25 +3,22 @@
 ini_set('session.use_strict_mode','1');
 session_set_cookie_params([
   'lifetime' => 0,
-  'path'     => '/',      // MUY IMPORTANTE: visible en / y /docs
+  'path'     => '/',
   'httponly' => true,
   'samesite' => 'Lax',
-  // 'secure' => true,    // solo si usas HTTPS
+  // 'secure' => true,
 ]);
 
-// Guarda sesiones en carpeta LOCAL del proyecto (evita problemas de XAMPP)
 $__sess_dir = __DIR__ . '/sessions';
 if (!is_dir($__sess_dir)) { @mkdir($__sess_dir, 0777, true); }
 ini_set('session.save_path', $__sess_dir);
 
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
 
 require_once "conexion.php";
 
-// Variable para mostrar mensajes de error
 $error = "";
 
-// Procesar el formulario si se envió por POST
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $username = trim($_POST['nombre_user'] ?? '');
     $password = $_POST['password_user'] ?? '';
@@ -29,7 +26,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($username === '' || $password === '') {
         $error = "❌ Usuario y contraseña requeridos.";
     } else {
-        $sql = "SELECT id, username, password FROM users WHERE username = ? LIMIT 1";
+        // Consulta solo con las columnas que existen
+        $sql = "SELECT id, username, password, is_admin
+                FROM users
+                WHERE username = ?
+                LIMIT 1";
         $stmt = $connection->prepare($sql);
         $stmt->bind_param("s", $username);
         $stmt->execute();
@@ -38,8 +39,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if ($res && $res->num_rows === 1) {
             $user = $res->fetch_assoc();
             if (password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['id'];
+                session_regenerate_id(true); // seguridad
+
+                $_SESSION['user_id']  = (int)$user['id'];
                 $_SESSION['username'] = $user['username'];
+                $_SESSION['is_admin'] = (int)($user['is_admin'] ?? 0);
+                // No asignamos role porque la columna no existe
+                $_SESSION['role']     = null;
+
                 header("Location: index.php");
                 exit;
             } else {
