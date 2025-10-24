@@ -241,14 +241,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </div>
 
-    <div class="form-container"><?php if (!empty($errors)): ?>
+    <div class="form-container">
+      <!-- Errores de validación -->
+      <?php if (!empty($errores)): ?>
         <div class="alert alert-danger d-flex align-items-start" role="alert">
           <i class="bi bi-exclamation-triangle-fill me-2" style="margin-top: 2px;"></i>
           <div>
             <strong>Por favor corrige los siguientes errores:</strong>
             <ul class="mb-0 mt-2">
-              <?php foreach ($errors as $e): ?>
-                <li><?= htmlspecialchars($e) ?></li>
+              <?php foreach ($errores as $campo => $error): ?>
+                <?php if ($campo !== 'general' && $campo !== 'poster'): ?>
+                  <li><?= htmlspecialchars($error) ?></li>
+                <?php endif; ?>
               <?php endforeach; ?>
             </ul>
           </div>
@@ -383,6 +387,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Validación de formulario
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    var forms = document.getElementsByClassName('needs-validation');
+    var validation = Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  }, false);
+})();
+
+// Preview de imagen
+document.querySelector('input[type="file"]').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const formText = this.nextElementSibling;
+    formText.innerHTML = `<i class="bi bi-check-circle me-1 text-success"></i>Imagen seleccionada: ${file.name}`;
+  }
+});
+</script>
+
 </body>
 </html>
