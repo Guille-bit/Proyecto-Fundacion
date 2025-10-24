@@ -129,319 +129,57 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
   <!-- Bootstrap + Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-   <link rel="stylesheet" href="style.css">
+  
+  <style>
+  /* === Navbar optimizado === */
+  .bg-custom-navbar { background: linear-gradient(135deg, #6f00ff 0%, #7b33ff 100%); height: 90px; display: flex; align-items: center; padding: 0 2rem; color: #fff; font-weight: 700; font-size: 1.8rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); border-radius: 0 0 20px 20px; }
+  .navbar-brand { display:flex; align-items:center; gap:.8rem; font-size: 1.8rem; }
+  .brand-logo { height: 70px; width:auto; display:block; vertical-align:middle; transition: transform 0.3s ease; }
+  .brand-logo:hover { transform: scale(1.05); }
+  .navbar-nav .nav-link { font-size: 1.2rem; font-weight: 500; padding: 0.75rem 1rem; }
+  .navbar-nav .nav-link i { font-size: 1.3rem; margin-right: 0.5rem; }
+  .text-light { font-size: 1.2rem; font-weight: 500; }
+  .btn-outline-light { font-size: 1.1rem; padding: 0.6rem 1.2rem; font-weight: 500; }
 
- <style>
-  /* === Navbar === */
-  .bg-custom-navbar {
-    background: linear-gradient(135deg, #6f00ff 0%, #7b33ff 100%);
-    height: 80px;
-    display: flex;
-    align-items: center;
-    padding: 0 2rem;
-    color: #fff;
-    font-weight: 700;
-    font-size: 1.5rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    border-radius: 0 0 20px 20px;
-  }
-  .navbar-brand { 
-    display:flex; align-items:center; gap:.5rem; 
-  }
-  .brand-logo { 
-    height: 80px; width:auto; display:block; vertical-align:middle; 
-  }
-  .logo-navbar { /* ajusta según el tamaño del icono */
-  width: auto;
-  object-fit: contain;
-  vertical-align: middle;
-}
-.logo-navbar {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-.navbar-nav .nav-item {
-  margin-right: 1.5rem; /* o el valor que prefieras */
-}
-
-
-  /* === Fondo general === */
-  body {
-    background: linear-gradient(135deg, #ffffffff 0%, #fdfdfdff 100%);
-    min-height: 100vh;
-  }
-
-  /* === Contenedor principal === */
-  .main-container {
-    background: rgba(255,255,255,0.95);
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    backdrop-filter: blur(10px);
-    margin: 2rem 0;
-  }
-
-  /* === Cabecera de página === */
-.page-header {
-  background: linear-gradient(135deg, #b58aff 0%, #6f00ff 100%);
-  color: #fff;
-  border-radius: 20px 20px 0 0;
-  padding: 1.5rem 2rem;
-  height: 80px; /* igual que la navbar */
-  display: flex;
-  align-items: center;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Eliminamos el fondo que causaba el hueco morado */
-.page-header::before {
-  display: none;
-}
-
-/* Título */
-.page-title {
-  margin: 0;
-  font-weight: 700;
-  font-size: 1.8rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Contador (badge) */
-.stats-badge {
-  background: rgba(255, 255, 255, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(10px);
-  padding: 0.5rem 1rem;
-  border-radius: 50px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-}
-
-/* Aseguramos que el contenedor interno ocupe todo el ancho */
-.page-header .d-flex {
-  width: 100%;
-}
-
-  /* === Tarjetas === */
-  .reservation-card {
-    border:none;
-    border-radius:16px;
-    box-shadow:0 8px 25px rgba(0,0,0,0.08);
-    transition:all .3s ease;
-    overflow:hidden;
-    background:#fff;
-  }
-
-  .reservation-card:hover {
-    transform: translateY(-5px);
-    box-shadow:0 15px 35px rgba(0,0,0,0.15);
-  }
-
-  .event-image {
-    width:100%;
-    height:200px;
-    object-fit:cover;
-  }
-
-  .event-image.past {
-    filter: grayscale(50%) brightness(0.9);
-  }
-
-  .card-content {
-    padding:1.5rem;
-  }
-
-  .event-title {
-    font-size:1.25rem;
-    font-weight:600;
-    color:#2d3748;
-    margin-bottom:.5rem;
-  }
-
-  .event-meta {
-    display:flex;
-    flex-direction:column;
-    gap:.5rem;
-    margin-bottom:1rem;
-  }
-
-  .meta-item {
-    display:flex;
-    align-items:center;
-    gap:.5rem;
-    font-size:.9rem;
-    color:#4a5568;
-  }
-
-  .meta-icon {
-    width:16px;
-    color:#6f42c1;
-  }
-
-  /* === Estados === */
-  .status-badge {
-    display:inline-flex;
-    align-items:center;
-    gap:.25rem;
-    padding:.5rem 1rem;
-    border-radius:50px;
-    font-size:.8rem;
-    font-weight:600;
-    text-transform:uppercase;
-    letter-spacing:.5px;
-  }
-
-  .badge-upcoming {
-    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-    color:#fff;
-    box-shadow:0 4px 15px rgba(72,187,120,.3);
-  }
-
-  .badge-past {
-    background: linear-gradient(135deg, #a0aec0 0%, #6f00ff 100%);
-    color:#fff;
-  }
-
-  /* === Precio === */
-  .price-info {
-    background: linear-gradient(135deg, #ffffffff 0%, #6f00ff 100%);
-    color:#fff;
-    padding:1rem;
-    border-radius:12px;
-    margin:1rem 0;
-    text-align:center;
-  }
-
-  .price-amount {
-    font-size:1.5rem;
-    font-weight:700;
-    margin:0;
-  }
-
-  .price-label {
-    font-size:.8rem;
-    opacity:.9;
-    margin:0;
-  }
-
-  /* === Botones === */
-  .action-buttons {
-    display:flex;
-    gap:.75rem;
-    margin-top:1.5rem;
-  }
-
-  .btn-view {
-    background: linear-gradient(135deg, #fdfdfdff 0%, #efeff0ff 100%);
-    border:none;
-    color:#fff;
-    padding:.75rem 1.5rem;
-    border-radius:12px;
-    font-weight:600;
-    transition: all .3s ease;
-  }
-
-  .btn-view:hover {
-    transform: translateY(-2px);
-    box-shadow:0 8px 20px rgba(243, 243, 243, 0.4);
-    color:#fff;
-  }
-
-  .btn-cancel {
-    background: linear-gradient(135deg, #ff2a2aff 0%, #fd5353ff 100%);
-    border:none;
-    color:#fff;
-    padding:.75rem 1.5rem;
-    border-radius:12px;
-    font-weight:600;
-    transition: all .3s ease;
-    flex:1;
-  }
-  h1{
-    color: white;
-  }
-
-  .btn-cancel:hover {
-    transform: translateY(-2px);
-    box-shadow:0 8px 20px rgba(252,129,129,.4);
-    color:#fff;
-  }
-
-  .btn-disabled {
-    background:#e2e8f0;
-    color:#a0aec0;
-    cursor:not-allowed;
-  }
-
-  /* === Estados vacíos === */
-  .empty-state {
-    text-align:center;
-    padding:4rem 2rem;
-    background:#fff;
-    border-radius:20px;
-    margin:2rem 0;
-  }
-
-  .empty-icon {
-    font-size:4rem;
-    color:#cbd5e0;
-    margin-bottom:1rem;
-  }
-
-  .reservation-item {
-    transition: opacity .25s ease, transform .25s ease;
-  }
-
-  .deleting {
-    animation: fadeOutScale .5s ease-out forwards;
-  }
-
-  @keyframes fadeOutScale {
-    0% { opacity:1; transform:scale(1); }
-    100% { opacity:0; transform:scale(.95); }
-  }
-
-  /* === Filtros === */
-  .filter-container {
-    background:#fff;
-    padding:1.5rem;
-    border-radius:16px;
-    margin-bottom:2rem;
-    box-shadow:0 4px 15px rgba(0,0,0,.05);
-  }
-
-  .filter-btn {
-    padding:.75rem 1.5rem;
-    border-radius:50px;
-    border:2px solid #e2e8f0;
-    background:#fff;
-    color:#4a5568;
-    font-weight:600;
-    transition:all .3s ease;
-  }
-
-  .filter-btn:hover, .filter-btn:checked + .filter-btn {
-    background: linear-gradient(135deg, #ebeaeeff 0%, #6f00ff 100%);
-    border-color:#6f42c1;
-    color:#fff;
-    transform: translateY(-2px);
-    box-shadow:0 8px 20px rgba(245, 245, 245, 0.3);
-  }
-
-  /* === Responsive === */
-  @media (max-width:400px){
-    .main-container { margin:1rem; border-radius:16px; }
-    .page-header { padding:1rem; height: 70px; }
-    .page-title { font-size:1rem; }
-    .action-buttons { flex-direction:column; }
-    .event-image { height:150px; }
-  }
-
+  /* === Resto del diseño === */
+  body { background: linear-gradient(135deg, #ffffffff 0%, #fdfdfdff 100%); min-height: 100vh; }
+  .main-container { background: rgba(255,255,255,0.95); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); backdrop-filter: blur(10px); margin: 2rem 0; }
+  .page-header { background: linear-gradient(135deg, #b58aff 0%, #6f00ff 100%); color: #fff; border-radius: 20px 20px 0 0; padding: 1.5rem 2rem; height: 80px; display: flex; align-items: center; width: 100%; position: relative; overflow: hidden; }
+  .page-header::before { display: none; }
+  .page-title { margin: 0; font-weight: 700; font-size: 1.8rem; display: flex; align-items: center; gap: 0.5rem; }
+  .stats-badge { background: rgba(255, 255, 255, 0.25); border: 1px solid rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.9rem; font-weight: 600; color: #fff; white-space: nowrap; }
+  .page-header .d-flex { width: 100%; }
+  .reservation-card { border:none; border-radius:16px; box-shadow:0 8px 25px rgba(0,0,0,0.08); transition:all .3s ease; overflow:hidden; background:#fff; }
+  .reservation-card:hover { transform: translateY(-5px); box-shadow:0 15px 35px rgba(0,0,0,0.15); }
+  .event-image { width:100%; height:200px; object-fit:cover; }
+  .event-image.past { filter: grayscale(50%) brightness(0.9); }
+  .card-content { padding:1.5rem; }
+  .event-title { font-size:1.25rem; font-weight:600; color:#2d3748; margin-bottom:.5rem; }
+  .event-meta { display:flex; flex-direction:column; gap:.5rem; margin-bottom:1rem; }
+  .meta-item { display:flex; align-items:center; gap:.5rem; font-size:.9rem; color:#4a5568; }
+  .meta-icon { width:16px; color:#6f42c1; }
+  .status-badge { display:inline-flex; align-items:center; gap:.25rem; padding:.5rem 1rem; border-radius:50px; font-size:.8rem; font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
+  .badge-upcoming { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color:#fff; box-shadow:0 4px 15px rgba(72,187,120,.3); }
+  .badge-past { background: linear-gradient(135deg, #a0aec0 0%, #6f00ff 100%); color:#fff; }
+  .price-info { background: linear-gradient(135deg, #ffffffff 0%, #6f00ff 100%); color:#fff; padding:1rem; border-radius:12px; margin:1rem 0; text-align:center; }
+  .price-amount { font-size:1.5rem; font-weight:700; margin:0; }
+  .price-label { font-size:.8rem; opacity:.9; margin:0; }
+  .action-buttons { display:flex; gap:.75rem; margin-top:1.5rem; }
+  .btn-view { background: linear-gradient(135deg, #fdfdfdff 0%, #efeff0ff 100%); border:none; color:#fff; padding:.75rem 1.5rem; border-radius:12px; font-weight:600; transition: all .3s ease; }
+  .btn-view:hover { transform: translateY(-2px); box-shadow:0 8px 20px rgba(243, 243, 243, 0.4); color:#fff; }
+  .btn-cancel { background: linear-gradient(135deg, #ff2a2aff 0%, #fd5353ff 100%); border:none; color:#fff; padding:.75rem 1.5rem; border-radius:12px; font-weight:600; transition: all .3s ease; flex:1; }
+  .btn-cancel:hover { transform: translateY(-2px); box-shadow:0 8px 20px rgba(252,129,129,.4); color:#fff; }
+  .btn-disabled { background:#e2e8f0; color:#a0aec0; cursor:not-allowed; }
+  .empty-state { text-align:center; padding:4rem 2rem; background:#fff; border-radius:20px; margin:2rem 0; }
+  .empty-icon { font-size:4rem; color:#cbd5e0; margin-bottom:1rem; }
+  .reservation-item { transition: opacity .25s ease, transform .25s ease; }
+  .deleting { animation: fadeOutScale .5s ease-out forwards; }
+  @keyframes fadeOutScale { 0% { opacity:1; transform:scale(1); } 100% { opacity:0; transform:scale(.95); } }
+  .filter-container { background:#fff; padding:1.5rem; border-radius:16px; margin-bottom:2rem; box-shadow:0 4px 15px rgba(0,0,0,.05); }
+  .filter-btn { padding:.75rem 1.5rem; border-radius:50px; border:2px solid #e2e8f0; background:#fff; color:#4a5568; font-weight:600; transition:all .3s ease; }
+  .filter-btn:hover, .filter-btn:checked + .filter-btn { background: linear-gradient(135deg, #ebeaeeff 0%, #6f00ff 100%); border-color:#6f42c1; color:#fff; transform: translateY(-2px); box-shadow:0 8px 20px rgba(245, 245, 245, 0.3); }
+  @media (max-width:991px) { .bg-custom-navbar { height: 80px; font-size: 1.6rem; } .brand-logo { height: 60px; } .navbar-nav .nav-link { font-size: 1.1rem; } }
+  @media (max-width:576px) { .bg-custom-navbar { height: 70px; font-size: 1.4rem; } .brand-logo { height: 50px; } .navbar-nav .nav-link { font-size: 1rem; } .main-container { margin:1rem; border-radius:16px; } .page-header { padding:1rem; height: 70px; } .page-title { font-size:1rem; } .action-buttons { flex-direction:column; } .event-image { height:150px; } }
 </style>
 <!-- Favicon -->
 <link rel="icon" type="image/png" href="/Proyecto-Fundacion/docs/uploads/eventos/logo4.png"/>
@@ -450,23 +188,13 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-custom-navbar shadow-sm">
   <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/"> <img src="/Proyecto-Fundacion/docs/uploads/eventos/logo3.png" alt="EventosApp" class="brand-logo"></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
     <div class="collapse navbar-collapse" id="nav">
-      <ul class="navbar-nav me-auto d-flex align-items-center">
-  <li class="nav-item">
-    <a class="nav-link fw-bold d-flex align-items-center" href="index.php" style="color: white;">
-      <img src="uploads/eventos/logo4.png" alt="Inicio" class="logo-navbar me-2">
-      EventosApp
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link fw-bold d-flex align-items-center" href="index.php" style="color: white;">
-      <i class="bi bi-search me-2"></i>
-      Explorar
-    </a>
-  </li>
-</ul>
-
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="index.php"><i class="bi bi-house me-1"></i>Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.php"><i class="bi bi-search me-1"></i>Explorar</a></li>
+      </ul>
       <div class="d-flex align-items-center gap-3">
         <span class="text-light"><i class="bi bi-person-circle me-1"></i><?= h($_SESSION['username'] ?? 'Usuario') ?></span>
         <a class="btn btn-outline-light btn-sm" href="logout.php"><i class="bi bi-box-arrow-right me-1"></i>Salir</a>
@@ -480,7 +208,7 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
     <!-- Header -->
     <div class="page-header">
       <div class="d-flex justify-content-between align-items-center">
-        <h1 class="page-title"><i class="bi bi-ticket-perforated me-3" style=color:white;></i>Mis Reservas</h1>
+        <h1 class="page-title"><i class="bi bi-ticket-perforated me-3"></i>Mis Reservas</h1>
         <div class="stats-badge badge fs-6"><?= count($reservas) ?> reserva<?= count($reservas) !== 1 ? 's' : '' ?></div>
       </div>
     </div>
