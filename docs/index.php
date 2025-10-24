@@ -1,4 +1,3 @@
-
 <?php
 // --- Configuración de sesión ---
 ini_set('session.use_strict_mode', '1');
@@ -107,17 +106,16 @@ $resultado = $connection->query($sql);
 <div class="hero-container">
   <div class="hero-text-wrapper">
   <div class="hero-text">
-      <h1 class="display-4 fw-bold">Descubre Eventos Increíbles Cerca de Ti</h1>
+      <h1 class="display-17 fw-bold">Descubre Eventos Increíbles Cerca de Ti</h1>
   </div>
   </div>
 </div>
-
 <!-- SLIDER / CAROUSEL -->
 <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
   <div class="carousel-inner">
     <div class="carousel-item active">
       <img src="uploads/eventos/bernabeu.jpg" class="d-block w-100 img-fluid event-img" alt="Festival de Cine">
-      <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
+      <div class="carousel-caption d-none d-md-block bg-white bg-opacity-50 rounded p-2" style="max-width: 500px; margin: 0 auto;">
         <h5>Tour Santiago Bernabeu</h5>
         <p>12 Oct 2025 - Estadio Santiago Bernabeu</p>
         <a href="#" class="btn btn-primary mt-2">Reservar</a>
@@ -252,7 +250,6 @@ $resultado = $connection->query($sql);
     <p class="mb-0">Tu plataforma para descubrir y reservar eventos únicos</p>
   </div>
 </footer>
-
 </body>
 </html>
 
