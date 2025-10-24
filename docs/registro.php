@@ -74,6 +74,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     />
   </head>
   <body>
+    <div class="text-center py-4">
+    <img src="uploads/eventos/logo6.png" alt="Logo EventosApp" style="width: 250px; height: auto;">
+  </div>
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-md-6">
