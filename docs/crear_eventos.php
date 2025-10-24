@@ -153,110 +153,233 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Crear evento</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Crear Evento - EventosApp</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    /* === Navbar optimizado === */
+    .bg-custom-navbar { background: linear-gradient(135deg, #6f00ff 0%, #7b33ff 100%); height: 90px; display: flex; align-items: center; padding: 0 2rem; color: #fff; font-weight: 700; font-size: 1.8rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); border-radius: 0 0 20px 20px; }
+    .navbar-brand { display:flex; align-items:center; gap:.8rem; font-size: 1.8rem; }
+    .brand-logo { height: 70px; width:auto; display:block; transition: transform 0.3s ease; }
+    .brand-logo:hover { transform: scale(1.05); }
+    .navbar-nav .nav-link { font-size: 1.2rem; font-weight: 500; padding: 0.75rem 1rem; }
+    .navbar-nav .nav-link i { font-size: 1.3rem; margin-right: 0.5rem; }
+    .text-light { font-size: 1.2rem; font-weight: 500; }
+    .btn-outline-light { font-size: 1.1rem; padding: 0.6rem 1.2rem; font-weight: 500; }
+
+    /* === Resto del diseño === */
+    body { background: #ffffff; min-height: 100vh; }
+    .main-container { background: rgba(255,255,255,0.95); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); backdrop-filter: blur(10px); margin: 2rem 0; }
+    .page-header { background: linear-gradient(135deg, #b58aff 0%, #6f00ff 100%); color: #fff; border-radius: 20px 20px 0 0; padding: 1.5rem 2rem; height: 80px; display: flex; align-items: center; width: 100%; position: relative; overflow: hidden; }
+    .page-header::before { display: none; }
+    .page-title { margin: 0; font-weight: 700; font-size: 1.8rem; display: flex; align-items: center; gap: 0.5rem; }
+    .page-subtitle { color: rgba(255,255,255,0.9); font-size: 1rem; margin: 0; font-weight: 400; }
+    
+    .form-container { padding: 3rem; }
+    .form-control, .form-select { border-radius: 12px; border: 2px solid #e2e8f0; padding: 0.9rem 1.2rem; font-size: 1rem; transition: all 0.3s ease; background: rgba(255, 255, 255, 0.9); }
+    .form-control:focus, .form-select:focus { border-color: #6f42c1; box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25); transform: translateY(-2px); }
+    .form-label { font-weight: 600; color: #2d3748; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .form-label i { color: #6f42c1; }
+    
+    .btn-submit { background: linear-gradient(135deg, #6f42c1 0%, #845ef7 100%); border: none; border-radius: 12px; padding: 1rem 2rem; font-weight: 600; font-size: 1.1rem; width: 100%; color: white; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(111, 66, 193, 0.3); color: white; }
+    
+    .alert { border-radius: 12px; border: none; padding: 1rem 1.5rem; margin-bottom: 1.5rem; font-weight: 500; }
+    .alert-danger { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white; }
+    .alert-danger ul { margin: 0; padding-left: 1.5rem; }
+    
+    .form-check-input:checked { background-color: #6f42c1; border-color: #6f42c1; }
+    .form-check-label { color: #4a5568; font-weight: 500; }
+    
+    .input-group-custom { position: relative; margin-bottom: 1.5rem; }
+    .input-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d; z-index: 10; font-size: 1.1rem; }
+    .form-control.with-icon { padding-left: 3rem; }
+    
+    /* Responsive */
+    @media (max-width:576px) { .main-container { margin:1rem; border-radius:16px; } .page-header { padding:1rem; height: 70px; } .page-title { font-size:1.5rem; } .form-container { padding: 2rem 1.5rem; } }
+  </style>
 </head>
-<body class="bg-light">
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-  <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="index.php">EventosApp</a>
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="mis_eventos.php">Mis eventos</a></li>
-        <li class="nav-item"><a class="nav-link text-danger" href="logout.php">Cerrar sesión</a></li>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-custom-navbar shadow-sm">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.php">
+      <img src="uploads/eventos/logo3.png" alt="EventosApp" class="brand-logo">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="index.php"><i class="bi bi-house me-1"></i>Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.php"><i class="bi bi-search me-1"></i>Explorar</a></li>
+        <li class="nav-item"><a class="nav-link" href="mis_reservas.php"><i class="bi bi-ticket-perforated me-1"></i>Mis Reservas</a></li>
+        <li class="nav-item"><a class="nav-link" href="mis_eventos.php"><i class="bi bi-calendar-plus me-1"></i>Mis Eventos</a></li>
       </ul>
+      <div class="d-flex align-items-center gap-3">
+        <span class="text-light">
+          <i class="bi bi-person-circle me-1"></i>
+          <?= htmlspecialchars($_SESSION['username'] ?? 'Usuario') ?>
+        </span>
+        <a class="btn btn-outline-light" href="logout.php">
+          <i class="bi bi-box-arrow-right me-1"></i>Salir
+        </a>
+      </div>
     </div>
   </div>
 </nav>
 
-<div class="container py-4 py-md-5">
-  <div class="mx-auto card border-0 shadow-sm rounded-4 p-4 p-md-5" style="max-width:760px;">
-    <h2 class="mb-1">Crear evento</h2>
-    <p class="text-muted mb-4">Publica un nuevo evento y añade una imagen (opcional).</p>
-
-    <?php if (!empty($errors)): ?>
-      <div class="alert alert-danger">
-        <ul class="mb-0">
-          <?php foreach ($errors as $e): ?><li><?= htmlspecialchars($e) ?></li><?php endforeach; ?>
-        </ul>
+<div class="container">
+  <div class="main-container" style="max-width: 900px; margin: 2rem auto;">
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">
+          <i class="bi bi-plus-circle me-3"></i>
+          Crear Evento
+        </h1>
+        <p class="page-subtitle">Publica un nuevo evento y compártelo con la comunidad</p>
       </div>
-    <?php endif; ?>
+    </div>
 
-    <form method="post" enctype="multipart/form-data" novalidate>
-      <div class="row g-3">
-        <div class="col-12">
-          <label class="form-label">Título *</label>
-          <input type="text" name="title" class="form-control form-control-lg rounded-3"
-                 required maxlength="150" value="<?= htmlspecialchars($val['title']) ?>">
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label">Categoría</label>
-          <select name="category" class="form-select">
-            <?php
-              $cats = ['Cultura','Tecnología','Ferias','Bienestar','Others'];
-              foreach ($cats as $c) {
-                $sel = ($val['category'] === $c) ? 'selected' : '';
-                echo "<option $sel>".htmlspecialchars($c)."</option>";
-              }
-            ?>
-          </select>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label">Ubicación *</label>
-          <input type="text" name="location" class="form-control" required
-                 value="<?= htmlspecialchars($val['location']) ?>">
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label">Inicio *</label>
-          <input type="datetime-local" name="start_at" class="form-control" required
-                 value="<?= htmlspecialchars($val['start_at']) ?>">
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label">Fin</label>
-          <input type="datetime-local" name="end_at" class="form-control"
-                 value="<?= htmlspecialchars($val['end_at']) ?>">
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label">Capacidad</label>
-          <input type="number" name="capacity" min="0" class="form-control"
-                 value="<?= htmlspecialchars($val['capacity']) ?>">
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label">Precio (€)</label>
-          <input type="number" name="price" min="0" step="0.01" class="form-control"
-                 value="<?= htmlspecialchars($val['price']) ?>">
-        </div>
-
-        <div class="col-md-4 d-flex align-items-end">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="is_public" id="is_public"
-                   <?= $val['is_public']==='1'?'checked':''; ?>>
-            <label class="form-check-label" for="is_public">Evento público</label>
+    <div class="form-container"><?php if (!empty($errors)): ?>
+        <div class="alert alert-danger d-flex align-items-start" role="alert">
+          <i class="bi bi-exclamation-triangle-fill me-2" style="margin-top: 2px;"></i>
+          <div>
+            <strong>Por favor corrige los siguientes errores:</strong>
+            <ul class="mb-0 mt-2">
+              <?php foreach ($errors as $e): ?>
+                <li><?= htmlspecialchars($e) ?></li>
+              <?php endforeach; ?>
+            </ul>
           </div>
         </div>
+      <?php endif; ?>
 
-        <div class="col-12">
-          <label class="form-label">Descripción</label>
-          <textarea name="description" rows="4" class="form-control"
-                    placeholder="Detalles del evento..."><?= htmlspecialchars($val['description']) ?></textarea>
-        </div>
+      <form method="post" enctype="multipart/form-data" novalidate>
+        <div class="row g-4">
+          <!-- Título -->
+          <div class="col-12">
+            <label class="form-label">
+              <i class="bi bi-card-text"></i>
+              Título del evento *
+            </label>
+            <input type="text" name="title" class="form-control" 
+                   required maxlength="150" 
+                   placeholder="Ej: Conferencia de Tecnología 2025"
+                   value="<?= htmlspecialchars($val['title']) ?>">
+          </div>
 
-        <div class="col-12">
-          <label class="form-label">Imagen (JPG/PNG/WebP, máx. 2MB)</label>
-          <input type="file" name="poster" accept="image/jpeg,image/png,image/webp" class="form-control">
-        </div>
+          <!-- Categoría y Ubicación -->
+          <div class="col-md-6">
+            <label class="form-label">
+              <i class="bi bi-tags"></i>
+              Categoría
+            </label>
+            <select name="category" class="form-select">
+              <?php
+                $cats = ['Cultura','Tecnología','Ferias','Bienestar','Others'];
+                foreach ($cats as $c) {
+                  $sel = ($val['category'] === $c) ? 'selected' : '';
+                  echo "<option $sel>".htmlspecialchars($c)."</option>";
+                }
+              ?>
+            </select>
+          </div>
 
-        <div class="col-12">
-          <button class="btn btn-primary w-100" type="submit">Crear evento</button>
+          <div class="col-md-6">
+            <label class="form-label">
+              <i class="bi bi-geo-alt"></i>
+              Ubicación *
+            </label>
+            <input type="text" name="location" class="form-control" required
+                   placeholder="Ej: Centro de Convenciones, Madrid"
+                   value="<?= htmlspecialchars($val['location']) ?>">
+          </div>
+
+          <!-- Fechas -->
+          <div class="col-md-6">
+            <label class="form-label">
+              <i class="bi bi-calendar-event"></i>
+              Fecha y hora de inicio *
+            </label>
+            <input type="datetime-local" name="start_at" class="form-control" required
+                   value="<?= htmlspecialchars($val['start_at']) ?>">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">
+              <i class="bi bi-calendar-check"></i>
+              Fecha y hora de fin
+            </label>
+            <input type="datetime-local" name="end_at" class="form-control"
+                   value="<?= htmlspecialchars($val['end_at']) ?>">
+          </div>
+
+          <!-- Capacidad, Precio y Visibilidad -->
+          <div class="col-md-4">
+            <label class="form-label">
+              <i class="bi bi-people"></i>
+              Capacidad máxima
+            </label>
+            <input type="number" name="capacity" min="0" class="form-control"
+                   placeholder="Sin límite"
+                   value="<?= htmlspecialchars($val['capacity']) ?>">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">
+              <i class="bi bi-currency-euro"></i>
+              Precio (€)
+            </label>
+            <input type="number" name="price" min="0" step="0.01" class="form-control"
+                   placeholder="0.00"
+                   value="<?= htmlspecialchars($val['price']) ?>">
+          </div>
+
+          <div class="col-md-4 d-flex align-items-end">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="is_public" id="is_public"
+                     <?= $val['is_public']==='1'?'checked':''; ?>>
+              <label class="form-check-label" for="is_public">
+                <i class="bi bi-eye me-1"></i>
+                Evento público
+              </label>
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="col-12">
+            <label class="form-label">
+              <i class="bi bi-file-text"></i>
+              Descripción del evento
+            </label>
+            <textarea name="description" rows="4" class="form-control"
+                      placeholder="Describe tu evento: agenda, ponentes, qué pueden esperar los asistentes..."><?= htmlspecialchars($val['description']) ?></textarea>
+          </div>
+
+          <!-- Imagen -->
+          <div class="col-12">
+            <label class="form-label">
+              <i class="bi bi-image"></i>
+              Imagen del evento
+            </label>
+            <input type="file" name="poster" accept="image/jpeg,image/png,image/webp" class="form-control">
+            <div class="form-text">
+              <i class="bi bi-info-circle me-1"></i>
+              Formatos: JPG, PNG o WebP. Tamaño máximo: 2MB
+            </div>
+          </div>
+
+          <!-- Botón -->
+          <div class="col-12 pt-3">
+            <button class="btn-submit" type="submit">
+              <i class="bi bi-plus-circle me-2"></i>
+              Crear Evento
+            </button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </div>
 
