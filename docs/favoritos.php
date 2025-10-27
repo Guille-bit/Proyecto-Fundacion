@@ -91,7 +91,7 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 <nav class="navbar navbar-expand-lg navbar-dark bg-custom-navbar shadow-sm">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center gap-2" href="index.php"> 
-      <img src="uploads/eventos/logo3.png" alt="EventosApp" class="brand-logo">
+      <img src="uploads/eventos/logo4.png" alt="EventosApp" class="brand-logo">
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
       <span class="navbar-toggler-icon"></span>
