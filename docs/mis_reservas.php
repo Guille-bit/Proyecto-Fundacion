@@ -95,6 +95,9 @@ $sql = "
     r.quantity,
     r.reservation_date,
     r.estado,
+    r.payment_status,
+    r.transaction_id,
+    r.total_amount,
     e.id               AS event_id,
     e.title,
     e.description,
@@ -258,7 +261,8 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
               $startDate = new DateTime($r['start_at']);
               $endDate = new DateTime($r['end_at']);
               $reservationDate = new DateTime($r['reservation_date']);
-              $totalPrice = (float)$r['price'] * (int)$r['quantity'];
+              $totalPrice = (float)($r['total_amount'] ?? ((float)$r['price'] * (int)$r['quantity']));
+              $paymentStatus = $r['payment_status'] ?? 'free';
             ?>
             <div class="col-lg-6 col-xl-4 reservation-item <?= $isPast ? 'past-event-item' : 'upcoming-event-item' ?>">
               <div class="reservation-card <?= $isPast ? 'past-event' : '' ?>">
@@ -271,9 +275,16 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
                 <div class="card-content">
                   <div class="d-flex justify-content-between align-items-start mb-3">
                     <h3 class="event-title"><?= h($r['title']) ?></h3>
-                    <span class="status-badge <?= $isPast ? 'badge-past' : 'badge-upcoming' ?>">
-                      <i class="bi bi-<?= $isPast ? 'clock-history' : 'calendar-check' ?>"></i><?= $isPast ? 'Finalizado' : 'Próximo' ?>
-                    </span>
+                    <div class="d-flex flex-column align-items-end gap-1">
+                      <span class="status-badge <?= $isPast ? 'badge-past' : 'badge-upcoming' ?>">
+                        <i class="bi bi-<?= $isPast ? 'clock-history' : 'calendar-check' ?>"></i><?= $isPast ? 'Finalizado' : 'Próximo' ?>
+                      </span>
+                      <?php if ($paymentStatus !== 'free'): ?>
+                        <span class="badge <?= $paymentStatus === 'completed' ? 'bg-success' : ($paymentStatus === 'pending' ? 'bg-warning' : 'bg-danger') ?>">
+                          <?= $paymentStatus === 'completed' ? 'Pagado' : ($paymentStatus === 'pending' ? 'Pendiente' : 'Fallido') ?>
+                        </span>
+                      <?php endif; ?>
+                    </div>
                   </div>
 
                   <div class="event-meta">
@@ -282,6 +293,9 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
                     <div class="meta-item"><i class="bi bi-geo-alt meta-icon"></i><span><?= h($r['location']) ?></span></div>
                     <div class="meta-item"><i class="bi bi-people meta-icon"></i><span><?= (int)$r['quantity'] ?> persona<?= (int)$r['quantity'] !== 1 ? 's' : '' ?></span></div>
                     <div class="meta-item"><i class="bi bi-calendar-plus meta-icon"></i><span>Reservado el <?= $reservationDate->format('d/m/Y') ?></span></div>
+                    <?php if (!empty($r['transaction_id']) && $r['transaction_id'] !== 'FREE_' . $r['reservation_id']): ?>
+                      <div class="meta-item"><i class="bi bi-receipt meta-icon"></i><span>ID: <?= h(substr($r['transaction_id'], 0, 16)) ?>...</span></div>
+                    <?php endif; ?>
                   </div>
 
                   <div class="price-info">

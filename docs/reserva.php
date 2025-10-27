@@ -15,7 +15,7 @@ if ($event_id === 0) {
 }
 
 // 3. Consultar la BD para obtener los datos del evento
-$stmt = $connection->prepare("SELECT title, description, location, start_at, image_path FROM events WHERE id = ? AND is_public = 1");
+$stmt = $connection->prepare("SELECT title, description, location, start_at, image_path, price FROM events WHERE id = ? AND is_public = 1");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
 $resultado = $stmt->get_result();
@@ -56,6 +56,15 @@ if (!$evento) {
           <p class="text-muted">
             <strong><i class="bi bi-geo-alt"></i> Lugar:</strong> <?= htmlspecialchars($evento['location']) ?>
           </p>
+          <?php if ((float)$evento['price'] > 0): ?>
+          <p class="text-muted">
+            <strong><i class="bi bi-currency-euro"></i> Precio:</strong> <?= number_format((float)$evento['price'], 2) ?> € por entrada
+          </p>
+          <?php else: ?>
+          <p class="text-success">
+            <strong><i class="bi bi-gift"></i> Evento gratuito</strong>
+          </p>
+          <?php endif; ?>
           <hr>
           <p><?= nl2br(htmlspecialchars($evento['description'])) ?></p>
         </div>
@@ -66,25 +75,54 @@ if (!$evento) {
       <h2>Confirmar Reserva</h2>
       <p>Estás reservando como: <strong><?= htmlspecialchars($_SESSION['username']) ?></strong>.</p>
       
-      <form action="procesar_reserva.php" method="POST" class="card p-4">
+      <form action="<?= (float)$evento['price'] > 0 ? 'pago.php' : 'procesar_reserva.php' ?>" method="<?= (float)$evento['price'] > 0 ? 'GET' : 'POST' ?>" class="card p-4">
         <input type="hidden" name="event_id" value="<?= $event_id ?>">
         
         <div class="mb-3">
           <label for="quantity" class="form-label fw-bold">Número de Entradas</label>
-          <input type="number" id="quantity" name="quantity" class="form-control" min="1" max="10" value="1" required>
+          <input type="number" id="quantity" name="quantity" class="form-control" min="1" max="10" value="1" required onchange="updateTotal()">
           <div class="form-text">Máximo 10 entradas por persona.</div>
         </div>
         
-        <p>Al hacer clic en "Confirmar", tu plaza quedará reservada.</p>
+        <?php if ((float)$evento['price'] > 0): ?>
+        <div class="mb-3">
+          <div class="card bg-light">
+            <div class="card-body text-center">
+              <h5 class="card-title">Total a pagar</h5>
+              <h3 class="card-text text-primary" id="totalAmount"><?= number_format((float)$evento['price'], 2) ?> €</h3>
+            </div>
+          </div>
+        </div>
+        
+        <p>Al hacer clic en "Continuar al pago", serás redirigido a la página de pago seguro.</p>
         
         <button type="submit" class="btn btn-primary w-100 btn-lg">
-          <i class="bi bi-check-circle-fill"></i> Confirmar Reserva
+          <i class="bi bi-credit-card me-2"></i> Continuar al pago
         </button>
+        <?php else: ?>
+        <p>Al hacer clic en "Confirmar", tu plaza quedará reservada sin costo.</p>
+        
+        <button type="submit" class="btn btn-success w-100 btn-lg">
+          <i class="bi bi-check-circle-fill me-2"></i> Confirmar Reserva Gratuita
+        </button>
+        <?php endif; ?>
       </form>
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function updateTotal() {
+  const quantity = document.getElementById('quantity').value;
+  const pricePerTicket = <?= (float)$evento['price'] ?>;
+  const total = quantity * pricePerTicket;
+  
+  const totalElement = document.getElementById('totalAmount');
+  if (totalElement) {
+    totalElement.textContent = total.toFixed(2) + ' €';
+  }
+}
+</script>
 </body>
 </html>
