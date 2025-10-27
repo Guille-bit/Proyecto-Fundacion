@@ -57,18 +57,15 @@ $resultado = $stmt->get_result();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>EventosApp</title>
-  
-  <base href="/Proyecto-Fundacion/docs/">
-
   <link rel="icon" type="image/png" href="uploads/eventos/logo5.png"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  
   <link rel="stylesheet" href="style.css?v=<?= filemtime(__DIR__.'/style.css') ?>">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body class="bg-custom text-white">
-
+<!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-custom-navbar shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="index.php">
@@ -77,25 +74,29 @@ $resultado = $stmt->get_result();
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarMenu">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-4">
         <li class="nav-item"><a class="nav-link" href="mis_reservas.php"><i class="bi bi-calendar-check me-2"></i>Mis reservas</a></li>
-        <li class="nav-item"><a class="nav-link" href="favoritos.php"><i class="bi bi-heart me-2"></i>Favoritos</a></li>
+        <li class="nav-item"><a class="nav-link" href="favoritos.php"><i class="bi bi-heart"></i> Favoritos</a></li>
+        <li class="nav-item"><a class="nav-link" href="eventos.php">Eventos</a></li>
       </ul>
+
+      <!-- Usuario -->
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <li class="nav-item dropdown user-hover">
-          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <span class="me-1"><i class="bi bi-person-circle"></i></span>
             <?= isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Invitado'; ?>
           </a>
-          <ul class="dropdown-menu dropdown-menu-start">
+          <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="userMenu">
             <?php if (!isset($_SESSION['username'])): ?>
               <li><a class="dropdown-item" href="login.php"><i class="bi bi-box-arrow-in-right me-2"></i> Iniciar sesión</a></li>
               <li><a class="dropdown-item" href="registro.php"><i class="bi bi-pencil-square me-2"></i> Registrarse</a></li>
             <?php else: ?>
+              <li><a class="dropdown-item" href="perfil.php"><i class="bi bi-person-circle me-2"></i> Mi perfil</a></li>
               <li><a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión</a></li>
               <?php if ($isAdmin): ?>
-                <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="crear_eventos.php"><i class="bi bi-plus-lg me-2"></i> Crear Eventos</a></li>
                 <li><a class="dropdown-item" href="mis_eventos.php"><i class="bi bi-pencil-square me-2"></i> Mis eventos</a></li>
               <?php endif; ?>
@@ -106,53 +107,52 @@ $resultado = $stmt->get_result();
     </div>
   </div>
 </nav>
+<!-- CARRUSEL -->
+<div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner position-relative">
 
-<header class="hero-container">
-    <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="uploads/eventos/bernabeu.jpg" class="d-block w-100" alt="Festival de Cine">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Tour Santiago Bernabeu</h5>
-                    <p>12 Oct 2025 - Estadio Santiago Bernabeu</p>
-                    <a href="reserva.php?id=1" class="btn btn-primary mt-2">Reservar</a>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <img src="uploads/eventos/programar.jpg" class="d-block w-100" alt="Taller de Programación">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Taller de Programación Web</h5>
-                    <p>15 Oct 2025 - Aula Virtual Medac</p>
-                    <a href="reserva.php?id=2" class="btn btn-primary mt-2">Reservar</a>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <img src="uploads/eventos/artesanal.jpg" class="d-block w-100" alt="Mercado Artesanal">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Mercado Artesanal de Otoño</h5>
-                    <p>18 Oct 2025 - Plaza Mayor</p>
-                    <a href="reserva.php?id=3" class="btn btn-primary mt-2">Reservar</a>
-                </div>
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#eventCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
+    <!-- Franja vertical oscura con texto -->
+    <div class="borde-vertical-oscuro">
+      <h2 class="texto-vertical-global">Descubre<br>Eventos<br>Increíbles<br>Cerca de Ti</h2>
     </div>
-    <div class="hero-text-wrapper">
-        <div class="hero-text">
-            <h1 class="display-5 fw-bold">Descubre Eventos Increíbles Cerca de Ti</h1>
-            <p class="lead">Tu próxima gran experiencia está a solo un clic de distancia.</p>
-        </div>
+
+    <!-- Slide 1 -->
+    <div class="carousel-item active position-relative">
+      <img src="uploads/eventos/bernabeu.jpg" class="d-block w-100 img-fluid event-img" alt="Tour Bernabeu">
+      <div class="carousel-caption d-none d-md-block bg-white bg-opacity-80 rounded p-2 text-black" style="max-width: 500px; margin: 0 auto;">
+        <h5>Tour Santiago Bernabeu</h5>
+        <p>12 Oct 2025 - Estadio Santiago Bernabeu</p>
+        <a href="#" class="btn btn-reservar-personalizado mt-2">Reservar</a>
+      </div>
     </div>
-</header>
 
-
+    <!-- Slide 2 -->
+    <div class="carousel-item position-relative">
+      <img src="uploads/eventos/programar.jpg" class="d-block w-100 img-fluid event-img" alt="Taller de Programación">
+      <div class="carousel-caption d-none d-md-block bg-white bg-opacity-80 rounded p-2 text-black" style="max-width: 500px; margin: 0 auto;">
+        <h5>Taller de Programación Web</h5>
+        <p>15 Oct 2025 - Aula Virtual Medac</p>
+        <a href="#" class="btn btn-reservar-personalizado mt-2">Reservar</a>
+      </div>
+    </div>
+    <!-- Slide 3 -->
+    <div class="carousel-item position-relative">
+      <img src="uploads/eventos/artesanal.jpg" class="d-block w-100 img-fluid event-img" alt="Mercado Artesanal">
+      <div class="carousel-caption d-none d-md-block bg-white bg-opacity-80 rounded p-2 text-black" style="max-width: 500px; margin: 0 auto;">
+        <h5>Mercado Artesanal de Otoño</h5>
+        <p>18 Oct 2025 - Plaza Mayor</p>
+       <a href="#" class="btn btn-reservar-personalizado mt-2">Reservar</a>
+      </div>
+    </div>
+  </div>
+  <!-- Controles -->
+  <button class="carousel-control-prev" type="button" data-bs-target="#eventCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+</div>
 <main class="container py-5">
   <section class="mb-5">
     <h2 class="text-dark">Buscador de Eventos</h2>
@@ -263,6 +263,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-
 </body>
 </html>
