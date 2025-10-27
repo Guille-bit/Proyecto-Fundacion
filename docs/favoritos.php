@@ -203,7 +203,6 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Función para quitar de favoritos
 function removeFavorite(favoriteId, button) {
   if (!confirm('¿Estás seguro de que quieres quitar este evento de tus favoritos?')) {
     return;
@@ -213,20 +212,15 @@ function removeFavorite(favoriteId, button) {
   button.disabled = true;
   button.innerHTML = '<i class="bi bi-hourglass-split"></i>';
   
-  // Simular llamada AJAX para quitar de favoritos
-  // En un proyecto real, aquí harías una llamada al servidor
   setTimeout(() => {
     card.classList.add('removing');
     card.addEventListener('animationend', () => {
       card.remove();
       
-      // Verificar si quedan favoritos
       const remainingFavorites = document.querySelectorAll('.favorite-item').length;
       if (remainingFavorites === 0) {
-        // Recargar página para mostrar estado vacío
         window.location.reload();
       } else {
-        // Actualizar contador
         const badge = document.querySelector('.stats-badge');
         if (badge) {
           const count = remainingFavorites;
@@ -237,7 +231,6 @@ function removeFavorite(favoriteId, button) {
   }, 1000);
 }
 
-// Animaciones para las tarjetas
 document.addEventListener('DOMContentLoaded', function() {
   const cards = document.querySelectorAll('.favorite-card');
   cards.forEach((card, index) => {
@@ -246,7 +239,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// Keyframes para la animación de entrada
 const style = document.createElement('style');
 style.textContent = `
   @keyframes slideInUp {
