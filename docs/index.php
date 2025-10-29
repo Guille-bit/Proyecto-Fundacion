@@ -110,26 +110,23 @@ $resultado = $stmt->get_result();
 <!-- CARRUSEL -->
 <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
   <div class="carousel-inner position-relative">
-
-    <!-- Franja vertical oscura con texto -->
+     <!-- Franja vertical oscura con texto -->
     <div class="borde-vertical-oscuro">
       <h2 class="texto-vertical-global">Descubre<br>Eventos<br>Increíbles<br>Cerca de Ti</h2>
     </div>
-
     <!-- Slide 1 -->
     <div class="carousel-item active position-relative">
       <img src="uploads/eventos/bernabeu.jpg" class="d-block w-100 img-fluid event-img" alt="Tour Bernabeu">
-      <div class="carousel-caption d-none d-md-block bg-white bg-opacity-80 rounded p-2 text-black" style="max-width: 500px; margin: 0 auto;">
-        <h5>Tour Santiago Bernabeu</h5>
+      <div class="carousel-caption  bg-white bg-opacity-100 rounded p-2 text-dark" style="max-width: 500px; margin: 0 auto;">
+        <h5 >Tour Santiago Bernabeu</h5>
         <p>12 Oct 2025 - Estadio Santiago Bernabeu</p>
         <a href="#" class="btn btn-reservar-personalizado mt-2">Reservar</a>
       </div>
     </div>
-
     <!-- Slide 2 -->
     <div class="carousel-item position-relative">
       <img src="uploads/eventos/programar.jpg" class="d-block w-100 img-fluid event-img" alt="Taller de Programación">
-      <div class="carousel-caption d-none d-md-block bg-white bg-opacity-80 rounded p-2 text-black" style="max-width: 500px; margin: 0 auto;">
+      <div class="carousel-caption  bg-white bg-opacity-100 rounded p-2 text-dark" style="max-width: 500px; margin: 0 auto;">
         <h5>Taller de Programación Web</h5>
         <p>15 Oct 2025 - Aula Virtual Medac</p>
         <a href="#" class="btn btn-reservar-personalizado mt-2">Reservar</a>
@@ -138,7 +135,7 @@ $resultado = $stmt->get_result();
     <!-- Slide 3 -->
     <div class="carousel-item position-relative">
       <img src="uploads/eventos/artesanal.jpg" class="d-block w-100 img-fluid event-img" alt="Mercado Artesanal">
-      <div class="carousel-caption d-none d-md-block bg-white bg-opacity-80 rounded p-2 text-black" style="max-width: 500px; margin: 0 auto;">
+      <div class="carousel-caption  bg-white bg-opacity-100 rounded p-2 text-dark" style="max-width: 500px; margin: 0 auto;">
         <h5>Mercado Artesanal de Otoño</h5>
         <p>18 Oct 2025 - Plaza Mayor</p>
        <a href="#" class="btn btn-reservar-personalizado mt-2">Reservar</a>
@@ -152,6 +149,53 @@ $resultado = $stmt->get_result();
   <button class="carousel-control-next" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
     <span class="carousel-control-next-icon"></span>
   </button>
+</div>
+<!--Proximos Eventos-->
+ <h2 class="text-center mb-4" style="color: #6f00ff;">
+  <i class="bi bi-calendar-week me-2"></i> Próximos eventos
+</h2>
+  <?php
+  $sql = "SELECT id, title, description, category, location, start_at, end_at, price, image_path
+          FROM events
+          WHERE is_public = 1
+            AND start_at >= NOW()
+          ORDER BY start_at ASC
+          LIMIT 3";
+  $res = $connection->query($sql);
+  ?>
+
+  <div class="row g-4">
+    <?php if ($res && $res->num_rows > 0): ?>
+      <?php while ($evento = $res->fetch_assoc()): ?>
+        <?php $img = $evento['image_path'] ?: 'assets/default-event.jpg'; ?>
+        <div class="col-md-4">
+          <div class="card event-card h-100 shadow-sm">
+            <img src="<?= htmlspecialchars($img) ?>"
+                 class="card-img-top event-img"
+                 alt="<?= htmlspecialchars($evento['title']) ?>"
+                 onerror="this.onerror=null;this.src='assets/default-event.jpg';">
+            <div class="card-body">
+              <h5 class="event-title"><?= htmlspecialchars($evento['title']) ?></h5>
+              <p class="mb-1"><strong><i class="bi bi-calendar-event"></i> Fecha:</strong>
+                <?= date('d M Y', strtotime($evento['start_at'])) ?>
+              </p>
+              <p class="mb-1"><strong><i class="bi bi-geo-alt"></i> Lugar:</strong>
+                <?= htmlspecialchars($evento['location']) ?>
+              </p>
+              <span class="badge bg-secondary"><?= htmlspecialchars($evento['category']) ?></span>
+             <a href="reserva.php?id=<?= $evento['id'] ?>" class="btn btn-reservar-personalizado w-100 mt-3">Reservar</a>
+            </div>
+          </div>
+        </div>
+      <?php endwhile; ?>
+    <?php else: ?>
+      <div class="col-12">
+        <div class="alert alert-warning text-center">
+          <i class="bi bi-exclamation-triangle-fill"></i> No hay eventos próximos.
+        </div>
+      </div>
+    <?php endif; ?>
+  </div>
 </div>
 <main class="container py-5">
   <section class="mb-5">
@@ -176,7 +220,9 @@ $resultado = $stmt->get_result();
             <input type="text" id="lugar" name="lugar" class="form-control" placeholder="Ej. Madrid, Barcelona..." value="<?= htmlspecialchars($lugar) ?>">
         </div>
         <div class="col-md-2">
-            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> Buscar</button>
+            <button type="submit" class="btn w-100" style="background-color:  #6f00ff; color: white;">
+  <i class="bi bi-search"></i> Buscar
+</button>
         </div>
     </form>
   </section>
@@ -204,7 +250,7 @@ $resultado = $stmt->get_result();
                 <p class="mb-1"><i class="bi bi-calendar-event"></i> <?= date('d M Y', strtotime($evento['start_at'])) ?></p>
                 <p class="mb-3"><i class="bi bi-geo-alt"></i> <?= htmlspecialchars($evento['location']) ?></p>
                 <span class="badge bg-secondary align-self-start"><?= htmlspecialchars($evento['category']) ?></span>
-                <a href="reserva.php?id=<?= $evento['id'] ?>" class="btn btn-outline-dark w-100 mt-auto">Reservar</a>
+                <a href="reserva.php?id=<?= $evento['id'] ?>" class="btn btn-reservar-personalizado w-100 mt-3">Reservar</a>
               </div>
             </div>
           </div>
