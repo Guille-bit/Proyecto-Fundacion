@@ -155,11 +155,11 @@ function simular_pago_bizum($phone, $total) {
             transition: all 0.3s ease;
         }
         .payment-method:hover {
-            border-color: #6f42c1;
+            border-color: #6f00ff;
             background-color: #f8f9fa;
         }
         .payment-method.active {
-            border-color: #6f42c1;
+            border-color: #6f00ff;
             background-color: #f8f9fa;
         }
         .payment-method input[type="radio"] {

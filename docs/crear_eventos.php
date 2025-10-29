@@ -177,18 +177,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     .form-container { padding: 3rem; }
     .form-control, .form-select { border-radius: 12px; border: 2px solid #e2e8f0; padding: 0.9rem 1.2rem; font-size: 1rem; transition: all 0.3s ease; background: rgba(255, 255, 255, 0.9); }
-    .form-control:focus, .form-select:focus { border-color: #6f42c1; box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25); transform: translateY(-2px); }
+    .form-control:focus, .form-select:focus { border-color: #6f00ff; box-shadow: 0 0 0 0.2rem rgba(111, 0, 255, 0.25); transform: translateY(-2px); }
     .form-label { font-weight: 600; color: #2d3748; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
-    .form-label i { color: #6f42c1; }
+    .form-label i { color: #6f00ff; }
     
-    .btn-submit { background: linear-gradient(135deg, #6f42c1 0%, #845ef7 100%); border: none; border-radius: 12px; padding: 1rem 2rem; font-weight: 600; font-size: 1.1rem; width: 100%; color: white; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; }
+    .btn-submit { background: linear-gradient(135deg, #6f00ff 0%, #845ef7 100%); border: none; border-radius: 12px; padding: 1rem 2rem; font-weight: 600; font-size: 1.1rem; width: 100%; color: white; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; }
     .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(111, 66, 193, 0.3); color: white; }
     
     .alert { border-radius: 12px; border: none; padding: 1rem 1.5rem; margin-bottom: 1.5rem; font-weight: 500; }
     .alert-danger { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white; }
     .alert-danger ul { margin: 0; padding-left: 1.5rem; }
     
-    .form-check-input:checked { background-color: #6f42c1; border-color: #6f42c1; }
+    .form-check-input:checked { background-color: #6f00ff; border-color: #6f00ff; }
     .form-check-label { color: #4a5568; font-weight: 500; }
     
     .input-group-custom { position: relative; margin-bottom: 1.5rem; }
