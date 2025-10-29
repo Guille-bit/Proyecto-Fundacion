@@ -64,12 +64,12 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
   .event-title { font-size:1.25rem; font-weight:600; color:#2d3748; margin-bottom:.5rem; }
   .event-meta { display:flex; flex-direction:column; gap:.5rem; margin-bottom:1rem; }
   .meta-item { display:flex; align-items:center; gap:.5rem; font-size:.9rem; color:#4a5568; }
-  .meta-icon { width:16px; color:#6f42c1; }
+  .meta-icon { width:16px; color:#6f00ff; }
   .status-badge { display:inline-flex; align-items:center; gap:.25rem; padding:.5rem 1rem; border-radius:50px; font-size:.8rem; font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
   .badge-upcoming { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color:#fff; box-shadow:0 4px 15px rgba(72,187,120,.3); }
   .badge-past { background: linear-gradient(135deg, #a0aec0 0%, #6f00ff 100%); color:#fff; }
   .action-buttons { display:flex; gap:.75rem; margin-top:1.5rem; }
-  .btn-view { background: linear-gradient(135deg, #6f42c1 0%, #845ef7 100%); border:none; color:#fff; padding:.75rem 1.5rem; border-radius:12px; font-weight:600; transition: all .3s ease; flex:1; }
+  .btn-view { background: linear-gradient(135deg, #6f00ff 0%, #845ef7 100%); border:none; color:#fff; padding:.75rem 1.5rem; border-radius:12px; font-weight:600; transition: all .3s ease; flex:1; }
   .btn-view:hover { transform: translateY(-2px); box-shadow:0 8px 20px rgba(111, 66, 193, 0.4); color:#fff; }
   .btn-remove { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); border:none; color:#fff; padding:.75rem; border-radius:12px; font-weight:600; transition: all .3s ease; }
   .btn-remove:hover { transform: translateY(-2px); box-shadow:0 8px 20px rgba(255, 107, 107, 0.4); color:#fff; }

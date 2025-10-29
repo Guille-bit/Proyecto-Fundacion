@@ -59,7 +59,7 @@ $eventos_creados = $resultado->fetch_all(MYSQLI_ASSOC);
     .event-title { font-size:1.25rem; font-weight:600; color:#2d3748; margin-bottom:.5rem; }
     .event-meta { display:flex; flex-direction:column; gap:.5rem; margin-bottom:1rem; }
     .meta-item { display:flex; align-items:center; gap:.5rem; font-size:.9rem; color:#4a5568; }
-    .meta-icon { width:16px; color:#6f42c1; }
+    .meta-icon { width:16px; color:#6f00ff; }
     .status-badge { display:inline-flex; align-items:center; gap:.25rem; padding:.5rem 1rem; border-radius:50px; font-size:.8rem; font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
     .badge-public { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color:#fff; box-shadow:0 4px 15px rgba(72,187,120,.3); }
     .badge-private { background: linear-gradient(135deg, #a0aec0 0%, #718096 100%); color:#fff; }

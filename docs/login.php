@@ -115,8 +115,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       }
       
       .form-control:focus {
-        border-color: #6f42c1;
-        box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25);
+        border-color: #6f00ff;
+        box-shadow: 0 0 0 0.2rem rgba(111, 0, 255, 0.25);
         transform: translateY(-2px);
       }
       
@@ -140,7 +140,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       }
       
       .btn-login {
-        background: linear-gradient(135deg, #6f42c1 0%, #845ef7 100%);
+        background: linear-gradient(135deg, #6f00ff 0%, #845ef7 100%);
         border: none;
         border-radius: 12px;
         padding: 0.9rem 2rem;
@@ -181,7 +181,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       }
       
       .register-link a {
-        color: #6f42c1;
+        color: #6f00ff;
         text-decoration: none;
         font-weight: 600;
         transition: color 0.3s ease;
@@ -307,7 +307,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         
         inputs.forEach(input => {
           input.addEventListener('focus', function() {
-            this.parentElement.querySelector('.input-icon').style.color = '#6f42c1';
+            this.parentElement.querySelector('.input-icon').style.color = '#6f00ff';
           });
           
           input.addEventListener('blur', function() {
