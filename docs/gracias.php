@@ -76,8 +76,11 @@ if (isset($_SESSION['user_id'])) {
     <a href="index.php" class="btn btn-primary me-2">Ver más eventos</a>
     <a href="mis_reservas.php" class="btn btn-secondary me-2">Ver mis reservas</a>
     <?php if ($reserva_info): ?>
-      <a href="generar_pdf_pago.php?id=<?= urlencode($reserva_info['id']) ?>" target="_blank" class="btn btn-success">
+      <a href="generar_pdf_pago.php?id=<?= urlencode($reserva_info['id']) ?>" target="_blank" class="btn btn-success me-2">
         <i class="bi bi-download me-1"></i> Descargar recibo (PDF)
+      </a>
+      <a href="generar_entrada_pdf.php?id=<?= urlencode($reserva_info['id']) ?>" target="_blank" class="btn btn-outline-primary">
+        <i class="bi bi-ticket-perforated me-1"></i> Descargar entrada (PDF)
       </a>
     <?php endif; ?>
   </div>

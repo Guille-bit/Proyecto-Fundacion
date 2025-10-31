@@ -302,7 +302,7 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
                     <?php if ($totalPrice > 0): ?>
                       <p class="price-amount"><?= number_format($totalPrice, 2, ',', '.') ?> €</p>
                       <p class="price-label">Total pagado</p>
-                      <a href="generar_entrada.php?id=<?= (int)$r['reservation_id'] ?>" class="btn btn-sm btn-outline-primary">
+                      <a href="generar_entrada_pdf.php?id=<?= (int)$r['reservation_id'] ?>" class="btn btn-sm btn-outline-primary">
                       <i class="bi bi-file-earmark-pdf me-1"></i> Generar Entrada</a>
                     <?php else: ?>
                       <p class="price-amount">GRATIS</p>
