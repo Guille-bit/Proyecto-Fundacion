@@ -31,7 +31,7 @@ Write-Ok "Usando PHP: $PhpPath"
 
 # composer.phar
 $composer = Join-Path $root "composer.phar"
-if (Test-Path $composer -and -not $ForceDownload) {
+if ((Test-Path $composer) -and (-not $ForceDownload)) {
     Write-Host "composer.phar ya existe en el proyecto."
 } else {
     Write-Host "Descargando composer.phar..."
