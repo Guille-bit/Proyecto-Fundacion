@@ -160,7 +160,7 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
   .event-title { font-size:1.25rem; font-weight:600; color:#2d3748; margin-bottom:.5rem; }
   .event-meta { display:flex; flex-direction:column; gap:.5rem; margin-bottom:1rem; }
   .meta-item { display:flex; align-items:center; gap:.5rem; font-size:.9rem; color:#4a5568; }
-  .meta-icon { width:16px; color:#6f00ff; }
+  .meta-icon { width:16px; color:#6f42c1; }
   .status-badge { display:inline-flex; align-items:center; gap:.25rem; padding:.5rem 1rem; border-radius:50px; font-size:.8rem; font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
   .badge-upcoming { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color:#fff; box-shadow:0 4px 15px rgba(72,187,120,.3); }
   .badge-past { background: linear-gradient(135deg, #a0aec0 0%, #6f00ff 100%); color:#fff; }
@@ -180,7 +180,7 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
   @keyframes fadeOutScale { 0% { opacity:1; transform:scale(1); } 100% { opacity:0; transform:scale(.95); } }
   .filter-container { background:#fff; padding:1.5rem; border-radius:16px; margin-bottom:2rem; box-shadow:0 4px 15px rgba(0,0,0,.05); }
   .filter-btn { padding:.75rem 1.5rem; border-radius:50px; border:2px solid #e2e8f0; background:#fff; color:#4a5568; font-weight:600; transition:all .3s ease; }
-  .filter-btn:hover, .filter-btn:checked + .filter-btn { background: linear-gradient(135deg, #ebeaeeff 0%, #6f00ff 100%); border-color:#6f00ff; color:#fff; transform: translateY(-2px); box-shadow:0 8px 20px rgba(111, 0, 255, 0.3); }
+  .filter-btn:hover, .filter-btn:checked + .filter-btn { background: linear-gradient(135deg, #ebeaeeff 0%, #6f00ff 100%); border-color:#6f42c1; color:#fff; transform: translateY(-2px); box-shadow:0 8px 20px rgba(245, 245, 245, 0.3); }
   @media (max-width:991px) { .bg-custom-navbar { height: 80px; font-size: 1.6rem; } .brand-logo { height: 60px; } .navbar-nav .nav-link { font-size: 1.1rem; } }
   @media (max-width:576px) { .bg-custom-navbar { height: 70px; font-size: 1.4rem; } .brand-logo { height: 50px; } .navbar-nav .nav-link { font-size: 1rem; } .main-container { margin:1rem; border-radius:16px; } .page-header { padding:1rem; height: 70px; } .page-title { font-size:1rem; } .action-buttons { flex-direction:column; } .event-image { height:150px; } }
 </style>
@@ -191,7 +191,7 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-custom-navbar shadow-sm">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center gap-2" href="index.php"> <img src="uploads/eventos/logo3.png" alt="EventosApp" class="brand-logo"></a>
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.php"> <img src="uploads/eventos/logo4.png" alt="EventosApp" class="brand-logo">EventosApp</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
     <div class="collapse navbar-collapse" id="nav">
       <ul class="navbar-nav me-auto">
@@ -302,6 +302,8 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
                     <?php if ($totalPrice > 0): ?>
                       <p class="price-amount"><?= number_format($totalPrice, 2, ',', '.') ?> €</p>
                       <p class="price-label">Total pagado</p>
+                      <a href="generar_entrada.php?id=<?= (int)$r['reservation_id'] ?>" class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-file-earmark-pdf me-1"></i> Generar Entrada</a>
                     <?php else: ?>
                       <p class="price-amount">GRATIS</p>
                       <p class="price-label">Evento gratuito</p>
