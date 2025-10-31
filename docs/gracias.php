@@ -74,7 +74,12 @@ if (isset($_SESSION['user_id'])) {
     <hr>
     <p>¿Qué quieres hacer ahora?</p>
     <a href="index.php" class="btn btn-primary me-2">Ver más eventos</a>
-    <a href="mis_reservas.php" class="btn btn-secondary">Ver mis reservas</a>
+    <a href="mis_reservas.php" class="btn btn-secondary me-2">Ver mis reservas</a>
+    <?php if ($reserva_info): ?>
+      <a href="generar_pdf_pago.php?id=<?= urlencode($reserva_info['id']) ?>" target="_blank" class="btn btn-success">
+        <i class="bi bi-download me-1"></i> Descargar recibo (PDF)
+      </a>
+    <?php endif; ?>
   </div>
 </div>
 
