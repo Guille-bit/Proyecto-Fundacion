@@ -59,6 +59,101 @@ $quantity = (int)($data['quantity'] ?? 1);
 $total = number_format((float)($data['total_amount'] ?? 0), 2, ',', '.');
 $txn = htmlspecialchars($data['transaction_id'] ?? '');
 
+// Preparar QR (payload simple: Reserva:id;Txn:txnid)
+$qrPayload = "Reserva:" . $res_id . ";Txn:" . $txn;
+$qrEncoded = rawurlencode($qrPayload);
+$qrRemoteUrl = "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl={$qrEncoded}&choe=UTF-8";
+
+// Generar QR localmente con endroid/qr-code si está disponible (recomendado)
+$qrSrc = $qrRemoteUrl; // fallback: URL remota si todo lo demás falla
+if (class_exists(\Endroid\QrCode\QrCode::class) && class_exists(\Endroid\QrCode\Writer\PngWriter::class)) {
+    try {
+        $qrCode = new \Endroid\QrCode\QrCode($qrPayload);
+        // Preferir SVG (no requiere GD) y fallback a PNG
+        if (class_exists(\Endroid\QrCode\Writer\SvgWriter::class)) {
+            $writer = new \Endroid\QrCode\Writer\SvgWriter();
+            $result = $writer->write($qrCode);
+            $qrData = $result->getString();
+            if ($qrData !== null) {
+                $qrSrc = 'data:image/svg+xml;base64,' . base64_encode($qrData);
+            }
+        } elseif (class_exists(\Endroid\QrCode\Writer\PngWriter::class)) {
+            $writer = new \Endroid\QrCode\Writer\PngWriter();
+            $result = $writer->write($qrCode);
+            $qrData = $result->getString();
+            if ($qrData !== null) {
+                $qrSrc = 'data:image/png;base64,' . base64_encode($qrData);
+            }
+        }
+    } catch (\Throwable $e) {
+        // si falla, dejamos el fallback remoto y continuamos
+        $qrSrc = $qrRemoteUrl;
+    }
+} else {
+    // Helper: intentar descargar con cURL y si no está disponible probar file_get_contents
+    function fetch_url_contents(string $url)
+    {
+        // intentar cURL primero (común en instalaciones Windows/XAMPP)
+        if (function_exists('curl_version')) {
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+            // en entornos locales puede no tener CA; permitir temporalmente no verificar
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            $data = curl_exec($ch);
+            $http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            if ($data !== false && $http >= 200 && $http < 300) {
+                return $data;
+            }
+        }
+
+        // fallback: file_get_contents si allow_url_fopen está habilitado
+        if (ini_get('allow_url_fopen')) {
+            $data = @file_get_contents($url);
+            if ($data !== false) return $data;
+        }
+
+        return false;
+    }
+
+    $qrData = fetch_url_contents($qrRemoteUrl);
+    if ($qrData !== false) {
+        $qrSrc = 'data:image/png;base64,' . base64_encode($qrData);
+    } else {
+        // Si no podemos descargar la imagen remota, intentar generar un placeholder simple con GD
+        if (function_exists('imagecreatetruecolor')) {
+            $w = 300; $h = 300;
+            $im = imagecreatetruecolor($w, $h);
+            $white = imagecolorallocate($im, 255,255,255);
+            $black = imagecolorallocate($im, 0,0,0);
+            imagefilledrectangle($im, 0,0,$w,$h,$white);
+            // Texto corto "QR" centrado
+            $fontSize = 5;
+            $text = "QR\nentrada";
+            // Dibujar rectángulo y texto central
+            imagerectangle($im, 10,10,$w-10,$h-10,$black);
+            $lines = explode("\n", $text);
+            $lineH = 12;
+            $y = ($h - count($lines)*$lineH) / 2;
+            foreach ($lines as $line) {
+                $textBox = imagefontwidth($fontSize) * strlen($line);
+                $x = ($w - $textBox) / 2;
+                imagestring($im, $fontSize, (int)$x, (int)$y, $line, $black);
+                $y += $lineH;
+            }
+            ob_start();
+            imagepng($im);
+            imagedestroy($im);
+            $png = ob_get_clean();
+            if ($png !== false) {
+                $qrSrc = 'data:image/png;base64,' . base64_encode($png);
+            }
+        }
+    }
+}
+
 // HTML del ticket
 $html = <<<HTML
 <!doctype html>
@@ -79,14 +174,19 @@ $html = <<<HTML
 <body>
   <div class="ticket">
     <h1>Entrada - {$event_title}</h1>
-    <div class="meta">
-      <div>
+    <div class="meta" style="align-items:flex-start;">
+      <div style="width:65%;">
         <div><strong>Fecha:</strong> {$event_date}</div>
         <div><strong>Lugar:</strong> {$event_location}</div>
-      </div>
-      <div>
-        <div><strong>Reserva #:</strong> {$res_id}</div>
+        <div style="margin-top:8px;"><strong>Reserva #:</strong> {$res_id}</div>
         <div><strong>Entradas:</strong> {$quantity}</div>
+      </div>
+      <div style="width:30%; text-align:center;">
+        <!-- QR: si $qrSrc es data: lo incrusta, si es URL remota Dompdf la cargará si está habilitado -->
+        <div style="padding:6px; border:1px solid #ddd; display:inline-block; background:#fff;">
+          <img src="{$qrSrc}" style="width:140px; height:140px; display:block;" alt="QR entrada" />
+        </div>
+        <div style="font-size:11px; margin-top:6px; color:#666;">Escanea para validar</div>
       </div>
     </div>
     <hr>
@@ -102,6 +202,9 @@ HTML;
 $options = new Options();
 $options->set('isHtml5ParserEnabled', true);
 $options->set('defaultFont', 'DejaVu Sans');
+// Permitir carga remota (necesario si usamos la URL remota como fallback para el QR)
+$options->setIsRemoteEnabled(true);
+$options->set('isRemoteEnabled', true);
 
 $dompdf = new Dompdf($options);
 $dompdf->loadHtml($html);
