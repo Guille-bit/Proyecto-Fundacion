@@ -161,35 +161,40 @@ $html = <<<HTML
 <head>
   <meta charset="utf-8">
   <title>Entrada #$res_id</title>
-  <style>
-    body { font-family: DejaVu Sans, Arial, sans-serif; color: #222; }
-    .ticket { border: 2px dashed #333; padding: 20px; max-width: 700px; margin: 0 auto; }
-    h1 { text-align: center; font-size: 20px; margin-bottom: 8px; }
-    .meta { display:flex; justify-content:space-between; margin-bottom:10px; }
-    .meta div { width:48%; }
-    .footer { text-align:center; margin-top:18px; font-size:12px; color:#666; }
-    .big { font-size:1.1em; font-weight:700; }
-  </style>
+    <style>
+        body { font-family: DejaVu Sans, Arial, sans-serif; color: #222; }
+        .ticket { border: 2px dashed #333; padding: 20px; max-width: 700px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 20px; margin-bottom: 8px; }
+        /* Layout using a 2-column table for maximum PDF compatibility */
+        .ticket-table { width: 100%; border-collapse: collapse; }
+        .ticket-table td.left { vertical-align: top; padding-right: 12px; }
+        .ticket-table td.right { width: 180px; vertical-align: top; text-align: center; }
+        .qr-frame { padding:6px; border:1px solid #ddd; display:inline-block; background:#fff; }
+        .footer { text-align:center; margin-top:18px; font-size:12px; color:#666; }
+        .big { font-size:1.1em; font-weight:700; }
+        hr.sep { border: none; border-top: 1px solid #ddd; margin: 18px 0; }
+    </style>
 </head>
 <body>
   <div class="ticket">
     <h1>Entrada - {$event_title}</h1>
-    <div class="meta" style="align-items:flex-start;">
-      <div style="width:65%;">
-        <div><strong>Fecha:</strong> {$event_date}</div>
-        <div><strong>Lugar:</strong> {$event_location}</div>
-        <div style="margin-top:8px;"><strong>Reserva #:</strong> {$res_id}</div>
-        <div><strong>Entradas:</strong> {$quantity}</div>
-      </div>
-      <div style="width:30%; text-align:center;">
-        <!-- QR: si $qrSrc es data: lo incrusta, si es URL remota Dompdf la cargará si está habilitado -->
-        <div style="padding:6px; border:1px solid #ddd; display:inline-block; background:#fff;">
-          <img src="{$qrSrc}" style="width:140px; height:140px; display:block;" alt="QR entrada" />
-        </div>
-        <div style="font-size:11px; margin-top:6px; color:#666;">Escanea para validar</div>
-      </div>
-    </div>
-    <hr>
+        <table class="ticket-table">
+            <tr>
+                <td class="left">
+                    <div><strong>Fecha:</strong> {$event_date}</div>
+                    <div><strong>Lugar:</strong> {$event_location}</div>
+                    <div style="margin-top:8px;"><strong>Reserva #:</strong> {$res_id}</div>
+                    <div><strong>Entradas:</strong> {$quantity}</div>
+                </td>
+                <td class="right">
+                    <div class="qr-frame">
+                        <img src="{$qrSrc}" style="width:150px; height:150px; display:block;" alt="QR entrada" />
+                    </div>
+                    <div style="font-size:11px; margin-top:6px; color:#666;">Escanea para validar</div>
+                </td>
+            </tr>
+        </table>
+    <hr class="sep">
     <p class="big">Total: {$total} €</p>
     <p>Transacción: {$txn}</p>
     <div class="footer">Presenta esta entrada en la entrada del evento.</div>
