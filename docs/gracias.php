@@ -127,11 +127,11 @@ HTML;
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'adrianlijar02@gmail.com'; 
-        $mail->Password = 'prfw lyot xhsx ifug';     
+        $mail->Username = 'eventosapp99@gmail.com'; 
+        $mail->Password = 'Medac2025.';     
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
-        $mail->setFrom('adrianlijar02@gmail.com', 'Fundación XYZ');
+        $mail->setFrom('eventosapp99@gmail.com', 'EventosApp');
         $mail->addAddress($correo, $nombre);
         $mail->isHTML(true);
         $mail->Subject = $asunto;
@@ -153,6 +153,7 @@ HTML;
   <title>¡Reserva Confirmada!</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="style.css?v=<?= filemtime(__DIR__.'/style.css') ?>">
 </head>
 <body class="bg-light">
 

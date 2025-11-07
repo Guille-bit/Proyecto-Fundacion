@@ -183,7 +183,7 @@ function simular_pago_bizum($phone, $total) {
             margin-bottom: 2rem;
         }
         .btn-pay {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-blue-dark) 100%);
             border: none;
             color: white;
             padding: 1rem 2rem;
@@ -194,7 +194,7 @@ function simular_pago_bizum($phone, $total) {
         }
         .btn-pay:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 8px 20px rgba(111, 0, 255, 0.18);
             color: white;
         }
         .payment-icon {

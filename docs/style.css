@@ -4,6 +4,78 @@ body {
   height: 100%;
 }
 
+/* Colores corporativos (morado de EventsApp) */
+:root {
+  --brand-blue: #6f00ff; /* morado principal de la marca */
+  --brand-blue-dark: #5a00d9; /* tono más oscuro para hover/active */
+  --brand-blue-contrast: #ffffff;
+}
+
+/* También sincronizar con variables CSS de Bootstrap para que componentes como .bg-primary usen el morado */
+:root {
+  --bs-primary: #6f00ff;
+  --bs-primary-rgb: 111,0,255;
+}
+
+/* Sobrescribir clases Bootstrap para usar el azul corporativo en botones comunes */
+.btn-primary,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: var(--brand-blue) !important;
+  border-color: var(--brand-blue) !important;
+  color: var(--brand-blue-contrast) !important;
+}
+.btn-primary:hover {
+  background-color: var(--brand-blue-dark) !important;
+  border-color: var(--brand-blue-dark) !important;
+  color: var(--brand-blue-contrast) !important;
+}
+
+.btn-secondary {
+  background-color: var(--brand-blue) !important;
+  border-color: var(--brand-blue) !important;
+  color: var(--brand-blue-contrast) !important;
+}
+.btn-secondary:hover {
+  background-color: var(--brand-blue-dark) !important;
+  border-color: var(--brand-blue-dark) !important;
+}
+
+.btn-success {
+  background-color: var(--brand-blue) !important;
+  border-color: var(--brand-blue) !important;
+  color: var(--brand-blue-contrast) !important;
+}
+.btn-success:hover { background-color: var(--brand-blue-dark) !important; }
+
+.btn-outline-primary {
+  color: var(--brand-blue) !important;
+  border-color: var(--brand-blue) !important;
+}
+.btn-outline-primary:hover {
+  background-color: var(--brand-blue) !important;
+  color: var(--brand-blue-contrast) !important;
+}
+
+/* Forzar bg-primary y text-primary a morado */
+.bg-primary { background-color: var(--brand-blue) !important; color: var(--brand-blue-contrast) !important; }
+.text-primary { color: var(--brand-blue) !important; }
+
+
+/* Ajustes para botones personalizados del sitio */
+.btn-reservar-personalizado {
+  background-color: transparent;
+  color: var(--brand-blue);
+  border: 2px solid var(--brand-blue);
+}
+.btn-reservar-personalizado:hover {
+  background-color: var(--brand-blue);
+  color: var(--brand-blue-contrast);
+}
+
+.favorite-btn { color: var(--brand-blue); }
+
+
 /* === Fondo personalizado para navbar === */
 .bg-custom-navbar {
   background-color: #6f00ff !important;
