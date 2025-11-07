@@ -2,3 +2,4 @@ vendor/
 composer.phar
 uploads/
 .env
+docs/sessions/
