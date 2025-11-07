@@ -1,22 +1,102 @@
-<?php 
-require 'session_boot.php'; 
+<?php
+require 'session_boot.php';
 require 'conexion.php';
 
-// Obtener información de la última reserva del usuario si está logueado
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Si usas Composer (recomendado)
+require __DIR__ . '/../vendor/autoload.php';
+
+// -----------------------------------------------------------------------------
+// 1) Obtener la última reserva del usuario logueado
+// -----------------------------------------------------------------------------
 $reserva_info = null;
 if (isset($_SESSION['user_id'])) {
     $stmt = $connection->prepare("
-        SELECT r.*, e.title, e.price, e.start_at, e.location 
-        FROM reservations r 
-        JOIN events e ON r.event_id = e.id 
-        WHERE r.user_id = ? 
-        ORDER BY r.reservation_date DESC 
+        SELECT r.*, e.title, e.price, e.start_at, e.location, u.username, u.email
+        FROM reservations r
+        JOIN events e ON r.event_id = e.id
+        JOIN users u ON r.user_id = u.id
+        WHERE r.user_id = ?
+        ORDER BY r.reservation_date DESC
         LIMIT 1
     ");
     $stmt->bind_param("i", $_SESSION['user_id']);
     $stmt->execute();
     $result = $stmt->get_result();
     $reserva_info = $result->fetch_assoc();
+}
+
+// -----------------------------------------------------------------------------
+// 2) Generar y enviar PDF si hay reserva
+// -----------------------------------------------------------------------------
+$enviado = false;
+$pdf_path = null;
+
+if ($reserva_info) {
+    $correo = $reserva_info['email'];
+    $nombre = $reserva_info['username'];
+    $res_id = $reserva_info['id'];
+    $transaction_id = !empty($reserva_info['transaction_id']) ? $reserva_info['transaction_id'] : ('R' . $res_id);
+
+    // Crear directorio de entradas si no existe
+    $dir = __DIR__ . '/entradas';
+    if (!is_dir($dir)) mkdir($dir, 0777, true);
+    $pdf_path = "$dir/entrada_{$res_id}.pdf";
+
+    // Generar PDF (solo si no existe)
+    if (!file_exists($pdf_path)) {
+        $pdf = new \FPDF();
+        $pdf->AddPage();
+        $pdf->SetFont('Arial', 'B', 20);
+        $pdf->Cell(0, 10, utf8_decode('🎟️ Entrada de Reserva'), 0, 1, 'C');
+        $pdf->Ln(8);
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(0, 8, utf8_decode('Evento: ') . utf8_decode($reserva_info['title']), 0, 1);
+        $pdf->Cell(0, 8, utf8_decode('Fecha: ') . date('d/m/Y H:i', strtotime($reserva_info['start_at'])), 0, 1);
+        $pdf->Cell(0, 8, utf8_decode('Lugar: ') . utf8_decode($reserva_info['location']), 0, 1);
+        $pdf->Cell(0, 8, utf8_decode('Entradas: ') . ($reserva_info['quantity'] ?? 1), 0, 1);
+        $pdf->Cell(0, 8, utf8_decode('Importe: ') . number_format($reserva_info['total_amount'] ?? $reserva_info['price'], 2) . ' €', 0, 1);
+        $pdf->Ln(10);
+        $pdf->Cell(0, 8, utf8_decode('Código de reserva: ') . $transaction_id, 0, 1);
+        $pdf->Ln(10);
+        $pdf->MultiCell(0, 8, utf8_decode("Gracias por tu compra, {$nombre}.\nPresenta este documento el día del evento.\n¡Disfruta!"));
+        $pdf->Output('F', $pdf_path);
+    }
+
+    // Enviar correo con PHPMailer
+    $asunto = "Tu entrada para el evento: " . $reserva_info['title'];
+    $mensaje_html = "
+    <p>Hola " . htmlspecialchars($nombre) . ",</p>
+    <p>Gracias por tu reserva para <strong>" . htmlspecialchars($reserva_info['title']) . "</strong>.</p>
+    <p>Adjuntamos tu entrada en formato PDF.</p>
+    <p><strong>Detalles del evento:</strong><br>
+    Fecha: " . date('d/m/Y H:i', strtotime($reserva_info['start_at'])) . "<br>
+    Lugar: " . htmlspecialchars($reserva_info['location']) . "</p>
+    <p>¡Disfruta del evento!<br>- Fundación XYZ</p>";
+
+    try {
+        $mail = new PHPMailer(true);
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'adrianlijar02@gmail.com'; // Cambia por tu correo
+        $mail->Password = 'prfw lyot xhsx ifug';     // Cambia por tu App Password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+        $mail->setFrom('adrianlijar02@gmail.com', 'Fundación XYZ');
+        $mail->addAddress($correo, $nombre);
+        $mail->isHTML(true);
+        $mail->Subject = $asunto;
+        $mail->Body = $mensaje_html;
+        $mail->AltBody = strip_tags($mensaje_html);
+        if (file_exists($pdf_path)) $mail->addAttachment($pdf_path);
+        $mail->send();
+        $enviado = true;
+    } catch (Exception $e) {
+        error_log("Error al enviar correo: " . $mail->ErrorInfo);
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -36,7 +116,7 @@ if (isset($_SESSION['user_id'])) {
     <h1 class="display-4 mt-3">¡Gracias por tu reserva!</h1>
     
     <?php if ($reserva_info): ?>
-      <div class="card mt-4 text-start">
+      <div class="card mt-4 text-start shadow-sm">
         <div class="card-header bg-primary text-white">
           <h5 class="mb-0"><i class="bi bi-ticket-perforated me-2"></i>Detalles de tu reserva</h5>
         </div>
@@ -69,8 +149,19 @@ if (isset($_SESSION['user_id'])) {
         </div>
       </div>
     <?php endif; ?>
-    
-    <p class="lead mt-4">Hemos registrado tu plaza correctamente. <?php if ($reserva_info && (float)$reserva_info['total_amount'] > 0): ?>Tu pago ha sido procesado exitosamente.<?php endif; ?> Recibirás un correo electrónico con los detalles (función no implementada).</p>
+
+    <p class="lead mt-4">
+      Hemos registrado tu plaza correctamente. 
+      <?php if ($reserva_info && (float)$reserva_info['total_amount'] > 0): ?>
+        Tu pago ha sido procesado exitosamente.
+      <?php endif; ?>
+      <?php if ($enviado): ?>
+        <br>✅ <strong>Se ha enviado tu entrada a <?= htmlspecialchars($reserva_info['email']) ?></strong>.
+      <?php else: ?>
+        <br>⚠️ <strong>No se pudo enviar el correo automáticamente.</strong>
+      <?php endif; ?>
+    </p>
+
     <hr>
     <p>¿Qué quieres hacer ahora?</p>
     <a href="index.php" class="btn btn-primary me-2">Ver más eventos</a>
