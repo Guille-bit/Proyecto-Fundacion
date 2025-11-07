@@ -1,5 +1,7 @@
 {
     "require": {
-        "dompdf/dompdf": "*"
+        "dompdf/dompdf": "*",
+        "phpmailer/phpmailer": "*",
+        "endroid/qr-code": "*"
     }
 }
