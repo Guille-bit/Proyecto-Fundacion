@@ -94,7 +94,7 @@ if ($reserva_info) {
       <tr><th>Código de reserva:</th><td>{$codigo}</td></tr>
     </table>
     <div class="footer">
-      <p>Fundación XYZ · www.tusitio.com</p>
+      <p>EventosApp · www.tusitio.com</p>
     </div>
   </div>
 </body>
@@ -128,7 +128,7 @@ HTML;
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
         $mail->Username = 'eventosapp99@gmail.com'; 
-        $mail->Password = 'Medac2025.';     
+        $mail->Password = 'bltw qyuc zwbc rjqw';     
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
         $mail->setFrom('eventosapp99@gmail.com', 'EventosApp');
