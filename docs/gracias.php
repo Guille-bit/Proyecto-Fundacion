@@ -4,9 +4,10 @@ require 'conexion.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
-// Si usas Composer (recomendado)
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php'; // PHPMailer + Dompdf
 
 // -----------------------------------------------------------------------------
 // 1) Obtener la última reserva del usuario logueado
@@ -29,7 +30,7 @@ if (isset($_SESSION['user_id'])) {
 }
 
 // -----------------------------------------------------------------------------
-// 2) Generar y enviar PDF si hay reserva
+// 2) Generar PDF con Dompdf y enviarlo por correo
 // -----------------------------------------------------------------------------
 $enviado = false;
 $pdf_path = null;
@@ -40,32 +41,77 @@ if ($reserva_info) {
     $res_id = $reserva_info['id'];
     $transaction_id = !empty($reserva_info['transaction_id']) ? $reserva_info['transaction_id'] : ('R' . $res_id);
 
-    // Crear directorio de entradas si no existe
+    // Crear carpeta /entradas si no existe
     $dir = __DIR__ . '/entradas';
     if (!is_dir($dir)) mkdir($dir, 0777, true);
     $pdf_path = "$dir/entrada_{$res_id}.pdf";
 
-    // Generar PDF (solo si no existe)
+    // -------------------------------------------------------------------------
+    // Generar PDF con Dompdf si no existe
+    // -------------------------------------------------------------------------
     if (!file_exists($pdf_path)) {
-        $pdf = new \FPDF();
-        $pdf->AddPage();
-        $pdf->SetFont('Arial', 'B', 20);
-        $pdf->Cell(0, 10, utf8_decode('🎟️ Entrada de Reserva'), 0, 1, 'C');
-        $pdf->Ln(8);
-        $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(0, 8, utf8_decode('Evento: ') . utf8_decode($reserva_info['title']), 0, 1);
-        $pdf->Cell(0, 8, utf8_decode('Fecha: ') . date('d/m/Y H:i', strtotime($reserva_info['start_at'])), 0, 1);
-        $pdf->Cell(0, 8, utf8_decode('Lugar: ') . utf8_decode($reserva_info['location']), 0, 1);
-        $pdf->Cell(0, 8, utf8_decode('Entradas: ') . ($reserva_info['quantity'] ?? 1), 0, 1);
-        $pdf->Cell(0, 8, utf8_decode('Importe: ') . number_format($reserva_info['total_amount'] ?? $reserva_info['price'], 2) . ' €', 0, 1);
-        $pdf->Ln(10);
-        $pdf->Cell(0, 8, utf8_decode('Código de reserva: ') . $transaction_id, 0, 1);
-        $pdf->Ln(10);
-        $pdf->MultiCell(0, 8, utf8_decode("Gracias por tu compra, {$nombre}.\nPresenta este documento el día del evento.\n¡Disfruta!"));
-        $pdf->Output('F', $pdf_path);
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('defaultFont', 'DejaVu Sans');
+        $dompdf = new Dompdf($options);
+
+        // Datos
+        $evento = htmlspecialchars($reserva_info['title']);
+        $fecha = date('d/m/Y H:i', strtotime($reserva_info['start_at']));
+        $lugar = htmlspecialchars($reserva_info['location']);
+        $entradas = htmlspecialchars($reserva_info['quantity']);
+        $total = number_format((float)($reserva_info['total_amount'] ?? $reserva_info['price']), 2, ',', '.');
+        $codigo = htmlspecialchars($transaction_id);
+        $nombre_usuario = htmlspecialchars($reserva_info['username']);
+
+        // HTML del PDF (formato similar a generar_pdf_pago.php)
+        $html = <<<HTML
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Entrada - {$evento}</title>
+  <style>
+    body { font-family: DejaVu Sans, Helvetica, Arial, sans-serif; color: #222; background: #fff; }
+    .container { max-width: 700px; margin: 0 auto; padding: 20px; border: 2px solid #0073aa; border-radius: 10px; }
+    h1 { text-align: center; color: #0073aa; }
+    .meta th { text-align: left; padding-right: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    td, th { padding: 8px; border-bottom: 1px solid #eee; }
+    .footer { margin-top: 30px; font-size: 0.9em; color: #666; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎟️ Entrada de Reserva</h1>
+    <p>Hola <strong>{$nombre_usuario}</strong>, gracias por tu compra. Presenta esta entrada el día del evento.</p>
+    <table class="meta">
+      <tr><th>Evento:</th><td>{$evento}</td></tr>
+      <tr><th>Fecha:</th><td>{$fecha}</td></tr>
+      <tr><th>Lugar:</th><td>{$lugar}</td></tr>
+      <tr><th>Entradas:</th><td>{$entradas}</td></tr>
+      <tr><th>Total:</th><td>{$total} €</td></tr>
+      <tr><th>Código de reserva:</th><td>{$codigo}</td></tr>
+    </table>
+    <div class="footer">
+      <p>Fundación XYZ · www.tusitio.com</p>
+    </div>
+  </div>
+</body>
+</html>
+HTML;
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Guardar el PDF en /entradas
+        file_put_contents($pdf_path, $dompdf->output());
     }
 
+    // -------------------------------------------------------------------------
     // Enviar correo con PHPMailer
+    // -------------------------------------------------------------------------
     $asunto = "Tu entrada para el evento: " . $reserva_info['title'];
     $mensaje_html = "
     <p>Hola " . htmlspecialchars($nombre) . ",</p>
@@ -81,8 +127,8 @@ if ($reserva_info) {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'adrianlijar02@gmail.com'; // Cambia por tu correo
-        $mail->Password = 'prfw lyot xhsx ifug';     // Cambia por tu App Password
+        $mail->Username = 'adrianlijar02@gmail.com'; 
+        $mail->Password = 'prfw lyot xhsx ifug';     
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
         $mail->setFrom('adrianlijar02@gmail.com', 'Fundación XYZ');
