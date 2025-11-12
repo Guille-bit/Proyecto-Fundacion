@@ -6,8 +6,12 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
+use Endroid\QrCode\Writer\PngWriter;
 
-require __DIR__ . '/../vendor/autoload.php'; // PHPMailer + Dompdf
+require __DIR__ . '/../vendor/autoload.php'; // PHPMailer + Dompdf + QR
 
 // -----------------------------------------------------------------------------
 // 1) Obtener la última reserva del usuario logueado
@@ -52,10 +56,11 @@ if ($reserva_info) {
     if (!file_exists($pdf_path)) {
         $options = new Options();
         $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
         $options->set('defaultFont', 'DejaVu Sans');
         $dompdf = new Dompdf($options);
 
-        // Datos
+        // Datos del evento
         $evento = htmlspecialchars($reserva_info['title']);
         $fecha = date('d/m/Y H:i', strtotime($reserva_info['start_at']));
         $lugar = htmlspecialchars($reserva_info['location']);
@@ -64,7 +69,22 @@ if ($reserva_info) {
         $codigo = htmlspecialchars($transaction_id);
         $nombre_usuario = htmlspecialchars($reserva_info['username']);
 
-        // HTML del PDF (formato similar a generar_pdf_pago.php)
+        // ✅ Generar QR local compatible con versión actual
+        $qr_contenido = "🎟️ Evento: {$evento}\n📅 Fecha: {$fecha}\n📍 Lugar: {$lugar}\n👤 Usuario: {$nombre_usuario}\n🔖 Código: {$codigo}";
+
+        $builder = new Builder(
+            writer: new PngWriter(),
+            data: $qr_contenido,
+            encoding: new Encoding('UTF-8'),
+            size: 180,
+            margin: 5
+        );
+        $qr = $builder->build();
+
+        // Convertir el QR a base64
+        $qr_base64 = 'data:image/png;base64,' . base64_encode($qr->getString());
+
+        // HTML del PDF con QR a la derecha
         $html = <<<HTML
 <!doctype html>
 <html lang="es">
@@ -73,29 +93,40 @@ if ($reserva_info) {
   <title>Entrada - {$evento}</title>
   <style>
     body { font-family: DejaVu Sans, Helvetica, Arial, sans-serif; color: #222; background: #fff; }
-    .container { max-width: 700px; margin: 0 auto; padding: 20px; border: 2px solid #0073aa; border-radius: 10px; }
+    .wrapper { max-width: 700px; margin: 0 auto; padding: 20px; border: 2px solid #0073aa; border-radius: 10px; }
     h1 { text-align: center; color: #0073aa; }
     .meta th { text-align: left; padding-right: 10px; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    td, th { padding: 8px; border-bottom: 1px solid #eee; }
+    td, th { padding: 8px; border-bottom: 1px solid #eee; vertical-align: top; }
     .footer { margin-top: 30px; font-size: 0.9em; color: #666; text-align: center; }
+    .qr { text-align: right; }
+    img.qr-img { width: 140px; height: 140px; border: 3px solid #0073aa; border-radius: 8px; padding: 5px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🎟️ Entrada de Reserva</h1>
-    <p>Hola <strong>{$nombre_usuario}</strong>, gracias por tu compra. Presenta esta entrada el día del evento.</p>
-    <table class="meta">
-      <tr><th>Evento:</th><td>{$evento}</td></tr>
-      <tr><th>Fecha:</th><td>{$fecha}</td></tr>
-      <tr><th>Lugar:</th><td>{$lugar}</td></tr>
-      <tr><th>Entradas:</th><td>{$entradas}</td></tr>
-      <tr><th>Total:</th><td>{$total} €</td></tr>
-      <tr><th>Código de reserva:</th><td>{$codigo}</td></tr>
+  <h1>🎟️ Entrada de Reserva</h1>
+  <div class="wrapper">
+    <table>
+      <tr>
+        <td width="70%">
+          <p>Hola <strong>{$nombre_usuario}</strong>, gracias por tu compra. Presenta esta entrada el día del evento.</p>
+          <table class="meta">
+            <tr><th>Evento:</th><td>{$evento}</td></tr>
+            <tr><th>Fecha:</th><td>{$fecha}</td></tr>
+            <tr><th>Lugar:</th><td>{$lugar}</td></tr>
+            <tr><th>Entradas:</th><td>{$entradas}</td></tr>
+            <tr><th>Total:</th><td>{$total} €</td></tr>
+            <tr><th>Código de reserva:</th><td>{$codigo}</td></tr>
+          </table>
+        </td>
+        <td class="qr" width="30%">
+          <img src="{$qr_base64}" alt="QR" class="qr-img">
+        </td>
+      </tr>
     </table>
-    <div class="footer">
-      <p>EventosApp · www.tusitio.com</p>
-    </div>
+  </div>
+  <div class="footer">
+    <p>EventosApp · www.tusitio.com</p>
   </div>
 </body>
 </html>
@@ -105,7 +136,6 @@ HTML;
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
-        // Guardar el PDF en /entradas
         file_put_contents($pdf_path, $dompdf->output());
     }
 
@@ -116,7 +146,7 @@ HTML;
     $mensaje_html = "
     <p>Hola " . htmlspecialchars($nombre) . ",</p>
     <p>Gracias por tu reserva para <strong>" . htmlspecialchars($reserva_info['title']) . "</strong>.</p>
-    <p>Adjuntamos tu entrada en formato PDF.</p>
+    <p>Adjuntamos tu entrada en formato PDF con tu código QR.</p>
     <p><strong>Detalles del evento:</strong><br>
     Fecha: " . date('d/m/Y H:i', strtotime($reserva_info['start_at'])) . "<br>
     Lugar: " . htmlspecialchars($reserva_info['location']) . "</p>
