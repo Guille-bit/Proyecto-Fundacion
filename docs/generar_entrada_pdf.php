@@ -64,7 +64,7 @@ $qrPayload = "Reserva:" . $res_id . ";Txn:" . $txn;
 $qrEncoded = rawurlencode($qrPayload);
 $qrRemoteUrl = "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl={$qrEncoded}&choe=UTF-8";
 
-// Generar QR localmente con endroid/qr-code si está disponible (recomendado)
+// Generar QR localmente con endroid/qr-code 
 $qrSrc = $qrRemoteUrl; // fallback: URL remota si todo lo demás falla
 if (class_exists(\Endroid\QrCode\QrCode::class) && class_exists(\Endroid\QrCode\Writer\PngWriter::class)) {
     try {

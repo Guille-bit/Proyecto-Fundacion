@@ -69,8 +69,7 @@ if ($reserva_info) {
         $codigo = htmlspecialchars($transaction_id);
         $nombre_usuario = htmlspecialchars($reserva_info['username']);
 
-        // ✅ Generar QR local compatible con versión actual
-        $qr_contenido = "🎟️ Evento: {$evento}\n📅 Fecha: {$fecha}\n📍 Lugar: {$lugar}\n👤 Usuario: {$nombre_usuario}\n🔖 Código: {$codigo}";
+        $qr_contenido = "Evento: {$evento}\n Fecha: {$fecha}\n Lugar: {$lugar}\n Usuario: {$nombre_usuario}\n Código: {$codigo}";
 
         $builder = new Builder(
             writer: new PngWriter(),
