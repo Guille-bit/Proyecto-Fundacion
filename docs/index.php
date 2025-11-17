@@ -2,15 +2,15 @@
 require 'session_boot.php';
 require 'conexion.php';
 
-// --- Determinar si el usuario es administrador ---
+//Determinar si el usuario es administrador
 $isAdmin = !empty($_SESSION['is_admin']) && (int)$_SESSION['is_admin'] === 1;
 
-// --- Recoger filtros de la URL de forma segura ---
+//Recoger filtros de la URL de forma segura
 $busqueda = trim($_GET['busqueda'] ?? '');
 $categoria = trim($_GET['categoria'] ?? '');
 $lugar = trim($_GET['lugar'] ?? '');
 
-// --- Obtener los IDs de los eventos favoritos del usuario ---
+//IDs de los eventos favoritos del usuario
 $userFavorites = [];
 if (isset($_SESSION['user_id'])) {
     $userId = (int)$_SESSION['user_id'];
@@ -21,7 +21,7 @@ if (isset($_SESSION['user_id'])) {
     $stmt->close();
 }
 
-// --- Construir la consulta SQL para los eventos filtrados ---
+//Construir la consulta SQL para los eventos filtrados
 $sql = "SELECT * FROM events WHERE is_public = 1";
 $params = [];
 $types = '';
@@ -82,7 +82,7 @@ $resultado = $stmt->get_result();
         <li class="nav-item"><a class="nav-link" href="eventos.php">Eventos</a></li>
       </ul>
 
-      <!-- Usuario -->
+<!-- Usuario -->
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <li class="nav-item dropdown user-hover">
           <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -110,7 +110,7 @@ $resultado = $stmt->get_result();
 <!-- CARRUSEL -->
 <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
   <div class="carousel-inner position-relative">
-     <!-- Franja vertical oscura con texto -->
+    <!-- Franja vertical oscura con texto -->
     <div class="borde-vertical-oscuro">
       <h2 class="texto-vertical-global">Descubre<br>Eventos<br>Increíbles<br>Cerca de Ti</h2>
     </div>
@@ -138,7 +138,7 @@ $resultado = $stmt->get_result();
       <div class="carousel-caption  bg-white bg-opacity-100 rounded p-2 text-dark" style="max-width: 500px; margin: 0 auto;">
         <h5>Mercado Artesanal de Otoño</h5>
         <p>18 Oct 2025 - Plaza Mayor</p>
-       <a href="#" class="btn btn-reservar-personalizado mt-2">Reservar</a>
+      <a href="#" class="btn btn-reservar-personalizado mt-2">Reservar</a>
       </div>
     </div>
   </div>
@@ -151,7 +151,7 @@ $resultado = $stmt->get_result();
   </button>
 </div>
 <!--Proximos Eventos-->
- <h2 class="text-center mb-4" style="color: #6f00ff;">
+<h2 class="text-center mb-4" style="color: #6f00ff;">
   <i class="bi bi-calendar-week me-2"></i> Próximos eventos
 </h2>
   <?php
@@ -171,9 +171,9 @@ $resultado = $stmt->get_result();
         <div class="col-md-4">
           <div class="card event-card h-100 shadow-sm">
             <img src="<?= htmlspecialchars($img) ?>"
-                 class="card-img-top event-img"
-                 alt="<?= htmlspecialchars($evento['title']) ?>"
-                 onerror="this.onerror=null;this.src='assets/default-event.jpg';">
+                class="card-img-top event-img"
+                alt="<?= htmlspecialchars($evento['title']) ?>"
+                onerror="this.onerror=null;this.src='assets/default-event.jpg';">
             <div class="card-body">
               <h5 class="event-title"><?= htmlspecialchars($evento['title']) ?></h5>
               <p class="mb-1"><strong><i class="bi bi-calendar-event"></i> Fecha:</strong>
@@ -183,7 +183,7 @@ $resultado = $stmt->get_result();
                 <?= htmlspecialchars($evento['location']) ?>
               </p>
               <span class="badge bg-secondary"><?= htmlspecialchars($evento['category']) ?></span>
-             <a href="reserva.php?id=<?= $evento['id'] ?>" class="btn btn-reservar-personalizado w-100 mt-3">Reservar</a>
+            <a href="reserva.php?id=<?= $evento['id'] ?>" class="btn btn-reservar-personalizado w-100 mt-3">Reservar</a>
             </div>
           </div>
         </div>
